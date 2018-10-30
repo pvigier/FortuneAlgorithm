@@ -25,9 +25,6 @@ void FortuneAlgorithm::construct()
             handleCircleEvent(event);
         delete event;
     }
-
-    // Shoud empty the beachline!
-    free(mBeachline.getRoot());
 }
 
 VoronoiDiagram FortuneAlgorithm::getDiagram() const
@@ -207,17 +204,4 @@ Vector2f FortuneAlgorithm::computeConvergencePoint(Vector2f point1, Vector2f poi
     return center;
 }
 
-void FortuneAlgorithm::free(Node* node)
-{
-    if (node == nullptr)
-        return;
-    else if (node->isLeaf())
-        delete node;
-    else
-    {
-        free(node->left);
-        free(node->right);
-        delete node;
-    }
-}
 

@@ -19,14 +19,16 @@ public:
     void insertAfter(Node* x, Node* y);
     void replaceNode(Node* oldNode, Node* newNode);
     void remove(Node* z);
-    Node* minimum(Node* x);
 
     void display();
 
 private:
     Node* mRoot;
 
+    Node* minimum(Node* x);
     void transplant(Node* u, Node* v); 
 
     float computeBreakpoint(Vector2f point1, Vector2f point2, float l) const;
+
+    void free(Node* node);
 };

@@ -49,8 +49,5 @@ private:
     void addEvent(Node* left, Node* middle, Node* right);
     void deleteEvent(Node* arc);
     Vector2f computeConvergencePoint(Vector2f point1, Vector2f point2, Vector2f point3, float& y);
-
-    // tmp
-    void free(Node* node);
 };
 

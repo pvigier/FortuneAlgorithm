@@ -9,17 +9,12 @@ Beachline::Beachline() : mRoot(nullptr)
 
 Beachline::~Beachline()
 {
-    //dtor
+    free(mRoot);    
 }
 
 bool Beachline::isEmpty()
 {
     return mRoot == nullptr;
-}
-
-Node* Beachline::getRoot()
-{
-    return mRoot;
 }
 
 void Beachline::setRoot(Node* root)
@@ -31,7 +26,7 @@ Node* Beachline::locateArcAbove(Vector2f point, float l) const
 {
     Node* node = mRoot;
     bool found = false;
-    while(!found)
+    while (!found)
     {
         float breakpointLeft = -std::numeric_limits<float>::infinity();
         float breakpointRight = std::numeric_limits<float>::infinity();
@@ -130,16 +125,16 @@ void Beachline::remove(Node* z)
         z->next->prev = z->prev;
 }
 
+void Beachline::display()
+{
+    mRoot->display("");
+}
+
 Node* Beachline::minimum(Node* x)
 {
     while (x->left != nullptr)
         x = x->left;
     return x;
-}
-
-void Beachline::display()
-{
-    mRoot->display("");
 }
 
 void Beachline::transplant(Node* u, Node* v)
@@ -164,5 +159,19 @@ float Beachline::computeBreakpoint(Vector2f point1, Vector2f point2, float l) co
 	float c = (y1 * y1 + x1 * x1 - l * l) * d1 - (y2 * y2 + x2 * x2 - l * l) * d2;
 	float delta = b * b - 4 * a * c;
     return (-b + std::sqrt(delta)) / (2 * a);
+}
+
+void Beachline::free(Node* node)
+{
+    if (node == nullptr)
+        return;
+    else if (node->isLeaf())
+        delete node;
+    else
+    {
+        free(node->left);
+        free(node->right);
+        delete node;
+    }
 }
 
