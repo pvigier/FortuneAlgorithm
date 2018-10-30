@@ -37,6 +37,10 @@ private:
     void insertFixup(Node* z);
     void removeFixup(Node* x);
 
+    // Rotations
+    void leftRotate(Node* x);
+    void rightRotate(Node* y);
+
     float computeBreakpoint(Vector2f point1, Vector2f point2, float l) const;
 
     void free(Node* node);

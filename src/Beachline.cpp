@@ -31,6 +31,7 @@ bool Beachline::isNil(Node* x) const
 void Beachline::setRoot(Node* root)
 {
     mRoot = root;
+    mRoot->color = Node::Color::BLACK;
 }
 
 Node* Beachline::locateArcAbove(Vector2f point, float l) const
@@ -72,6 +73,8 @@ void Beachline::insertBefore(Node* x, Node* y)
         y->prev->next = y;
     y->next = x;
     x->prev = y;
+    // Balance the tree
+    insertFixup(y);    
 }
 
 void Beachline::insertAfter(Node* x, Node* y)
@@ -91,6 +94,8 @@ void Beachline::insertAfter(Node* x, Node* y)
         y->next->prev = y;
     y->prev = x;
     x->next = y;
+    // Balance the tree
+    insertFixup(y);    
 }
 
 void Beachline::replaceNode(Node* oldNode, Node* newNode)
@@ -108,6 +113,7 @@ void Beachline::replaceNode(Node* oldNode, Node* newNode)
         newNode->prev->next = newNode;
     if (!isNil(newNode->next))
         newNode->next->prev = newNode;
+    newNode->color = oldNode->color;
 }
 
 void Beachline::remove(Node* z)
@@ -177,12 +183,160 @@ void Beachline::transplant(Node* u, Node* v)
 
 void Beachline::insertFixup(Node* z)
 {
-
+    while (z->parent->color == Node::Color::RED)
+    {
+        if (z->parent == z->parent->parent->left)
+        {
+            Node* y = z->parent->parent->right;
+            if (y->color == Node::Color::RED)
+            {
+                z->parent->color = Node::Color::BLACK;
+                y->color = Node::Color::BLACK;
+                z->parent->parent->color = Node::Color::RED;
+                z = z->parent->parent;
+            }
+            else
+            {
+                if (z == z->parent->right)
+                {
+                    z = z->parent;
+                    leftRotate(z);
+                }
+                z->parent->color = Node::Color::BLACK;
+                z->parent->parent->color = Node::Color::RED;
+                rightRotate(z->parent->parent);
+            }
+        }
+        else
+        {
+            Node* y = z->parent->parent->left;
+            if (y->color == Node::Color::RED)
+            {
+                z->parent->color = Node::Color::BLACK;
+                y->color = Node::Color::BLACK;
+                z->parent->parent->color = Node::Color::RED;
+                z = z->parent->parent;
+            }
+            else
+            {
+                if (z == z->parent->left)
+                {
+                    z = z->parent;
+                    rightRotate(z);
+                }
+                z->parent->color = Node::Color::BLACK;
+                z->parent->parent->color = Node::Color::RED;
+                leftRotate(z->parent->parent);
+            }
+        }
+    }
+    mRoot->color = Node::Color::BLACK;
 }
 
 void Beachline::removeFixup(Node* x)
 {
 
+    while (x != mRoot && x->color == Node::Color::BLACK)
+    {
+        Node* w;
+        if (x == x->parent->left)
+        {
+            w = x->parent->right;
+            if (w->color == Node::Color::RED)
+            {
+                w->color = Node::Color::BLACK;
+                x->parent->color = Node::Color::RED;
+                leftRotate(x->parent);
+                w = x->parent->right;
+            }
+            if (w->left->color == Node::Color::BLACK && w->right->color == Node::Color::BLACK)
+            {
+                w->color = Node::Color::RED;
+                x = x->parent;
+            }
+            else
+            {
+                if (w->right->color == Node::Color::BLACK)
+                {
+                    w->left->color = Node::Color::BLACK;
+                    w->color = Node::Color::RED;
+                    rightRotate(w);
+                    w = x->parent->right;
+                }
+                w->color = x->parent->color;
+                x->parent->color = Node::Color::BLACK;
+                w->right->color = Node::Color::BLACK;
+                leftRotate(x->parent);
+                x = mRoot;
+            }
+        }
+        else
+        {
+            w = x->parent->left;
+            if (w->color == Node::Color::RED)
+            {
+                w->color = Node::Color::BLACK;
+                x->parent->color = Node::Color::RED;
+                rightRotate(x->parent);
+                w = x->parent->left;
+            }
+            if (w->left->color == Node::Color::BLACK && w->right->color == Node::Color::BLACK)
+            {
+                w->color = Node::Color::RED;
+                x = x->parent;
+            }
+            else
+            {
+                if (w->left->color == Node::Color::BLACK)
+                {
+                    w->right->color = Node::Color::BLACK;
+                    w->color = Node::Color::RED;
+                    leftRotate(w);
+                    w = x->parent->left;
+                }
+                w->color = x->parent->color;
+                x->parent->color = Node::Color::BLACK;
+                w->left->color = Node::Color::BLACK;
+                rightRotate(x->parent);
+                x = mRoot;
+            } 
+        }
+    }
+    x->color = Node::Color::BLACK;
+}
+
+void Beachline::leftRotate(Node* x)
+{
+    Node* y = x->right;
+    x->right = y->left;
+    if (!isNil(y->left))
+        y->left->parent = x;
+    y->parent = x->parent;
+    if (isNil(x->parent))
+        mRoot = y;
+    else if (x->parent->left == x)
+        x->parent->left = y;
+    else
+        x->parent->right = y;
+    y->left = x;
+    x->parent = y;
+}
+
+void Beachline::rightRotate(Node* y)
+{
+    Node* x = y->left;
+    y->left = x->right;
+    if (!isNil(x->right))
+        x->right->parent = y;
+    x->parent = y->parent;
+    if (isNil(y->parent))
+        mRoot = x;
+    else if (y->parent->left == y)
+        y->parent->left = x;
+    else
+        y->parent->right = x;
+    x->right = y;
+    y->parent = x;
 }
 
 float Beachline::computeBreakpoint(Vector2f point1, Vector2f point2, float l) const
