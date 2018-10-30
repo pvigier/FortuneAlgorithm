@@ -6,6 +6,8 @@ class Event;
 
 struct Node
 {
+    enum class Color{RED, BLACK};
+
     Node* parent;
     Node* left;
     Node* right;
@@ -16,10 +18,9 @@ struct Node
     // Optimizations
     Node* prev;
     Node* next;
+    // Only for balancing
+    Color color;
 
-    Node(const VoronoiDiagram::Site* site, Node* parent = nullptr);
-
-    bool isLeaf() const;
     void display(std::string tabs) const;
 };
 

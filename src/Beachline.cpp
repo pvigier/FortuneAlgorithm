@@ -2,19 +2,30 @@
 #include <limits>
 #include "Node.h"
 
-Beachline::Beachline() : mRoot(nullptr)
+Beachline::Beachline() : mNil(new Node), mRoot(mNil)
 {
-    //ctor
+    mNil->color = Node::Color::BLACK; 
 }
 
 Beachline::~Beachline()
 {
     free(mRoot);    
+    delete mNil;
 }
 
-bool Beachline::isEmpty()
+Node* Beachline::createNode(const VoronoiDiagram::Site* site)
 {
-    return mRoot == nullptr;
+    return new Node{mNil, mNil, mNil, site, nullptr, nullptr, nullptr, mNil, mNil, Node::Color::RED};
+}
+
+bool Beachline::isEmpty() const
+{
+    return isNil(mRoot);
+}
+
+bool Beachline::isNil(Node* x) const
+{
+    return x == mNil;
 }
 
 void Beachline::setRoot(Node* root)
@@ -30,9 +41,9 @@ Node* Beachline::locateArcAbove(Vector2f point, float l) const
     {
         float breakpointLeft = -std::numeric_limits<float>::infinity();
         float breakpointRight = std::numeric_limits<float>::infinity();
-        if (node->prev)
+        if (!isNil(node->prev))
            breakpointLeft =  computeBreakpoint(node->prev->site->point, node->site->point, l);
-        if (node->next)
+        if (!isNil(node->next))
             breakpointRight = computeBreakpoint(node->site->point, node->next->site->point, l);
         if (point.x < breakpointLeft)
             node = node->prev;
@@ -46,7 +57,7 @@ Node* Beachline::locateArcAbove(Vector2f point, float l) const
 
 void Beachline::insertBefore(Node* x, Node* y)
 {
-    if (x->left == nullptr)
+    if (isNil(x->left))
     {
         x->left = y;
         y->parent = x;
@@ -57,7 +68,7 @@ void Beachline::insertBefore(Node* x, Node* y)
         y->parent = x->prev;
     }
     y->prev = x->prev;
-    if (y->prev != nullptr)
+    if (!isNil(y->prev))
         y->prev->next = y;
     y->next = x;
     x->prev = y;
@@ -65,7 +76,7 @@ void Beachline::insertBefore(Node* x, Node* y)
 
 void Beachline::insertAfter(Node* x, Node* y)
 {
-    if (x->right == nullptr)
+    if (isNil(x->right))
     {
         x->right = y;
         y->parent = x;
@@ -76,7 +87,7 @@ void Beachline::insertAfter(Node* x, Node* y)
         y->parent = x->next;
     }
     y->next = x->next;
-    if (y->next != nullptr)
+    if (!isNil(y->next))
         y->next->prev = y;
     y->prev = x;
     x->next = y;
@@ -87,28 +98,41 @@ void Beachline::replaceNode(Node* oldNode, Node* newNode)
     transplant(oldNode, newNode);
     newNode->left = oldNode->left;
     newNode->right = oldNode->right;
-    if (newNode->left)
+    if (!isNil(newNode->left))
         newNode->left->parent = newNode;
-    if (newNode->right)
+    if (!isNil(newNode->right))
         newNode->right->parent = newNode;
     newNode->prev = oldNode->prev;
     newNode->next = oldNode->next;
-    if (newNode->prev)
+    if (!isNil(newNode->prev))
         newNode->prev->next = newNode;
-    if (newNode->next)
+    if (!isNil(newNode->next))
         newNode->next->prev = newNode;
 }
 
 void Beachline::remove(Node* z)
 {
-    if (z->left == nullptr)
+    Node* y = z;
+    Node::Color yOriginalColor = y->color;
+    Node* x;
+    if (isNil(z->left))
+    {
+        x = z->right;
         transplant(z, z->right);
-    else if (z->right == nullptr)
+    }
+    else if (isNil(z->right))
+    {
+        x = z->left;
         transplant(z, z->left);
+    }
     else
     {
-        Node* y = minimum(z->right);
-        if (y->parent != z)
+        y = minimum(z->right);
+        yOriginalColor = y->color;
+        x = y->right;
+        if (y->parent == z)
+            x->parent = y; // Because x could be Nil
+        else
         {
             transplant(y, y->right);
             y->right = z->right;
@@ -117,36 +141,48 @@ void Beachline::remove(Node* z)
         transplant(z, y);
         y->left = z->left;
         y->left->parent = y;
+        y->color = z->color;
     }
+    if (yOriginalColor == Node::Color::BLACK)
+        removeFixup(x);
     // Update next and prev
-    if (z->prev)
+    if (!isNil(z->prev))
         z->prev->next = z->next;
-    if (z->next)
+    if (!isNil(z->next))
         z->next->prev = z->prev;
 }
 
-void Beachline::display()
+void Beachline::display() const
 {
     mRoot->display("");
 }
 
-Node* Beachline::minimum(Node* x)
+Node* Beachline::minimum(Node* x) const
 {
-    while (x->left != nullptr)
+    while (!isNil(x->left))
         x = x->left;
     return x;
 }
 
 void Beachline::transplant(Node* u, Node* v)
 {
-    if (u->parent == nullptr)
+    if (isNil(u->parent))
         mRoot = v;
     else if (u == u->parent->left)
         u->parent->left = v;
     else
         u->parent->right = v;
-    if (v != nullptr)
-        v->parent = u->parent;
+    v->parent = u->parent;
+}
+
+void Beachline::insertFixup(Node* z)
+{
+
+}
+
+void Beachline::removeFixup(Node* x)
+{
+
 }
 
 float Beachline::computeBreakpoint(Vector2f point1, Vector2f point2, float l) const
@@ -163,10 +199,8 @@ float Beachline::computeBreakpoint(Vector2f point1, Vector2f point2, float l) co
 
 void Beachline::free(Node* node)
 {
-    if (node == nullptr)
+    if (isNil(node))
         return;
-    else if (node->isLeaf())
-        delete node;
     else
     {
         free(node->left);

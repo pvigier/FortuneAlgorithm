@@ -38,7 +38,7 @@ void FortuneAlgorithm::handleSiteEvent(Event* event)
     // 1. Check if the bachline is empty
     if (mBeachline.isEmpty())
     {
-        mBeachline.setRoot(new Node(site));
+        mBeachline.setRoot(mBeachline.createNode(site));
         return;
     }
     // 2. Look for the arc above the site
@@ -54,10 +54,10 @@ void FortuneAlgorithm::handleSiteEvent(Event* event)
     rightArc->leftHalfEdge = leftArc->rightHalfEdge;
     // 5. Check circle events
     // Left triplet
-    if (leftArc->prev != nullptr)
+    if (!mBeachline.isNil(leftArc->prev))
         addEvent(leftArc->prev, leftArc, middleArc);
     // Right triplet
-    if (rightArc->next != nullptr)
+    if (!mBeachline.isNil(rightArc->next))
         addEvent(middleArc, rightArc, rightArc->next);
 }
 
@@ -76,20 +76,20 @@ void FortuneAlgorithm::handleCircleEvent(Event* event)
     removeArc(arc, vertex);
     // 4. Add new circle events
     // Left triplet
-    if (leftArc->prev != nullptr)
+    if (!mBeachline.isNil(leftArc->prev))
         addEvent(leftArc->prev, leftArc, rightArc);
     // Right triplet
-    if (rightArc->next != nullptr)
+    if (!mBeachline.isNil(rightArc->next))
         addEvent(leftArc, rightArc, rightArc->next);
 }
 
 Node* FortuneAlgorithm::breakArc(Node* arc, const VoronoiDiagram::Site* site)
 {
     // Create the new subtree
-    Node* middleArc = new Node(site);
-    Node* leftArc = new Node(arc->site);
+    Node* middleArc = mBeachline.createNode(site);
+    Node* leftArc = mBeachline.createNode(arc->site);
     leftArc->leftHalfEdge = arc->leftHalfEdge;
-    Node* rightArc = new Node(arc->site);
+    Node* rightArc = mBeachline.createNode(arc->site);
     rightArc->rightHalfEdge = arc->rightHalfEdge;
     // Insert the subtree in the beachline
     mBeachline.replaceNode(arc, middleArc);
