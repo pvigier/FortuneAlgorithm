@@ -27,8 +27,6 @@ void Beachline::setRoot(Node* root)
     mRoot = root;
 }
 
-#include <iostream>
-
 Node* Beachline::locateArcAbove(Vector2f point, float l) const
 {
     Node* node = mRoot;
@@ -113,7 +111,6 @@ void Beachline::transplant(Node* u, Node* v)
 }
 
 float Beachline::computeBreakpoint(Vector2f point1, Vector2f point2, float l) const
-
 {
     float x1 = point1.x, y1 = point1.y, x2 = point2.x, y2 = point2.y;
     float d1 = 1 / (2 * (y1 - l));
