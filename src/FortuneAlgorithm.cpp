@@ -96,37 +96,8 @@ Node* FortuneAlgorithm::breakArc(Node* arc, const VoronoiDiagram::Site* site)
     rightArc->rightHalfEdge = arc->rightHalfEdge;
     // Insert the subtree in the beachline
     mBeachline.replaceNode(arc, middleArc);
-    if (middleArc->left == nullptr)
-    {
-        middleArc->left = leftArc;
-        leftArc->parent = middleArc;
-    }
-    else
-    {
-        arc->prev->right = leftArc;
-        leftArc->parent = arc->prev;
-    }
-    if (middleArc->right == nullptr)
-    {
-        middleArc->right = rightArc;
-        rightArc->parent = middleArc;
-    }
-    else
-    {
-        arc->next->left = rightArc;
-        rightArc->parent = arc->next;
-    }
-    // Update pointers (prev and next)
-    if(arc->prev != nullptr)
-        arc->prev->next= leftArc;
-    leftArc->prev = arc->prev;
-    leftArc->next = middleArc;
-    middleArc->prev = leftArc;
-    middleArc->next = rightArc;
-    rightArc->prev = middleArc;
-    rightArc->next = arc->next;
-    if(arc->next != nullptr)
-        arc->next->prev = rightArc;
+    mBeachline.insertBefore(middleArc, leftArc);
+    mBeachline.insertAfter(middleArc, rightArc);
     // Delete old arc
     delete arc;
     // Return the root of the subtree

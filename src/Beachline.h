@@ -15,6 +15,8 @@ public:
     void setRoot(Node* root);
 
     Node* locateArcAbove(Vector2f point, float l) const;
+    void insertBefore(Node* x, Node* y);
+    void insertAfter(Node* x, Node* y);
     void replaceNode(Node* oldNode, Node* newNode);
     void remove(Node* z);
     Node* minimum(Node* x);

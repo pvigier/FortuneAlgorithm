@@ -49,6 +49,44 @@ Node* Beachline::locateArcAbove(Vector2f point, float l) const
     return node;
 }
 
+void Beachline::insertBefore(Node* x, Node* y)
+{
+    if (x->left == nullptr)
+    {
+        x->left = y;
+        y->parent = x;
+    }
+    else
+    {
+        x->prev->right = y;
+        y->parent = x->prev;
+    }
+    y->prev = x->prev;
+    if (y->prev != nullptr)
+        y->prev->next = y;
+    y->next = x;
+    x->prev = y;
+}
+
+void Beachline::insertAfter(Node* x, Node* y)
+{
+    if (x->right == nullptr)
+    {
+        x->right = y;
+        y->parent = x;
+    }
+    else
+    {
+        x->next->left = y;
+        y->parent = x->next;
+    }
+    y->next = x->next;
+    if (y->next != nullptr)
+        y->next->prev = y;
+    y->prev = x;
+    x->next = y;
+}
+
 void Beachline::replaceNode(Node* oldNode, Node* newNode)
 {
     transplant(oldNode, newNode);
@@ -58,6 +96,12 @@ void Beachline::replaceNode(Node* oldNode, Node* newNode)
         newNode->left->parent = newNode;
     if (newNode->right)
         newNode->right->parent = newNode;
+    newNode->prev = oldNode->prev;
+    newNode->next = oldNode->next;
+    if (newNode->prev)
+        newNode->prev->next = newNode;
+    if (newNode->next)
+        newNode->next->prev = newNode;
 }
 
 void Beachline::remove(Node* z)
