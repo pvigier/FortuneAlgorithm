@@ -10,11 +10,11 @@ FortuneAlgorithm::FortuneAlgorithm(std::vector<Vector2f> points) : mDiagram(std:
 void FortuneAlgorithm::construct()
 {
     // Initialize event queue
-    for(std::size_t i = 0; i < mDiagram.getNbSites(); ++i)
+    for (std::size_t i = 0; i < mDiagram.getNbSites(); ++i)
         mEvents.push(new Event(mDiagram.getSite(i)));
 
     // Process events
-    while(!mEvents.isEmpty())
+    while (!mEvents.isEmpty())
     {
         Event* event = mEvents.top();
         mEvents.pop();
@@ -39,7 +39,7 @@ void FortuneAlgorithm::handleSiteEvent(Event* event)
 {
     const VoronoiDiagram::Site* site = event->site;
     // 1. Check if the bachline is empty
-    if(mBeachline.isEmpty())
+    if (mBeachline.isEmpty())
     {
         mBeachline.setRoot(new Node(site));
         return;
@@ -57,10 +57,10 @@ void FortuneAlgorithm::handleSiteEvent(Event* event)
     rightArc->leftHalfEdge = leftArc->rightHalfEdge;
     // 5. Check circle events
     // Left triplet
-    if(leftArc->prev != nullptr)
+    if (leftArc->prev != nullptr)
         addEvent(leftArc->prev, leftArc, middleArc);
     // Right triplet
-    if(rightArc->next != nullptr)
+    if (rightArc->next != nullptr)
         addEvent(middleArc, rightArc, rightArc->next);
 }
 
@@ -79,10 +79,10 @@ void FortuneAlgorithm::handleCircleEvent(Event* event)
     removeArc(arc, vertex);
     // 4. Add new circle events
     // Left triplet
-    if(leftArc->prev != nullptr)
+    if (leftArc->prev != nullptr)
         addEvent(leftArc->prev, leftArc, rightArc);
     // Right triplet
-    if(rightArc->next != nullptr)
+    if (rightArc->next != nullptr)
         addEvent(leftArc, rightArc, rightArc->next);
 }
 
@@ -177,7 +177,7 @@ void FortuneAlgorithm::addEvent(Node* left, Node* middle, Node* right)
         (!leftBreakpointMovingRight && leftInitialX > convergencePoint.x)) &&
         ((rightBreakpointMovingRight && rightInitialX < convergencePoint.x) ||
         (!rightBreakpointMovingRight && rightInitialX > convergencePoint.x));
-    if(isValid && isBelow)
+    if (isValid && isBelow)
     {
         Event* event = new Event(y, convergencePoint, middle);
         middle->event = event;
@@ -187,7 +187,7 @@ void FortuneAlgorithm::addEvent(Node* left, Node* middle, Node* right)
 
 void FortuneAlgorithm::deleteEvent(Node* arc)
 {
-    if(arc->event != nullptr)
+    if (arc->event != nullptr)
     {
         mEvents.remove(arc->event->index);
         delete arc->event;
@@ -209,9 +209,9 @@ Vector2f FortuneAlgorithm::computeConvergencePoint(Vector2f point1, Vector2f poi
 
 void FortuneAlgorithm::free(Node* node)
 {
-    if(node == nullptr)
+    if (node == nullptr)
         return;
-    else if(node->isLeaf())
+    else if (node->isLeaf())
         delete node;
     else
     {

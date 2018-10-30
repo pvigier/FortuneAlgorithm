@@ -18,7 +18,7 @@ std::vector<Vector2f> generatePoints(int nbPoints)
     std::uniform_real_distribution<float> distribution (0.0, 1.0);
 
     std::vector<Vector2f> points;
-    for(int i = 0; i < nbPoints; ++i)
+    for (int i = 0; i < nbPoints; ++i)
         points.push_back(Vector2f{distribution(generator), distribution(generator)});
 
     return points;
@@ -44,35 +44,35 @@ void drawEdge(sf::RenderWindow& window, Vector2f origin, Vector2f destination, s
 
 void drawPoints(sf::RenderWindow& window, std::vector<Vector2f> points)
 {
-    for(Vector2f& point : points)
+    for (Vector2f& point : points)
         drawPoint(window, point, sf::Color(100, 250, 50));
 }
 
 void drawDiagram(sf::RenderWindow& window, VoronoiDiagram& diagram, int nbSites)
 {
-    for(int i = 0; i < nbSites; ++i)
+    for (int i = 0; i < nbSites; ++i)
     {
         const VoronoiDiagram::Site* site = diagram.getSite(i);
         Vector2f center = site->point;
         VoronoiDiagram::Face* face = site->face;
         VoronoiDiagram::HalfEdge* halfEdge = face->outerComponent;
-        while(halfEdge->prev != nullptr)
+        while (halfEdge->prev != nullptr)
         {
             halfEdge = halfEdge->prev;
-            if(halfEdge == face->outerComponent)
+            if (halfEdge == face->outerComponent)
                 break;
         }
         VoronoiDiagram::HalfEdge* start = halfEdge;
-        while(halfEdge != nullptr)
+        while (halfEdge != nullptr)
         {
-            if(halfEdge->origin != nullptr && halfEdge->destination != nullptr)
+            if (halfEdge->origin != nullptr && halfEdge->destination != nullptr)
             {
                 Vector2f origin = (halfEdge->origin->point - center) * 0.9f + center;
                 Vector2f destination = (halfEdge->destination->point - center) * 0.9f + center;
                 drawEdge(window, origin, destination, sf::Color::Red);
             }
             halfEdge = halfEdge->next;
-            if(halfEdge == start)
+            if (halfEdge == start)
                 break;
         }
     }
@@ -89,14 +89,14 @@ int main()
 
     // Print vertices
     const std::list<VoronoiDiagram::Vertex>& vertices = diagram.getVertices();
-    for(const VoronoiDiagram::Vertex& vertex : vertices)
+    for (const VoronoiDiagram::Vertex& vertex : vertices)
         std::cout << vertex.point << std::endl;
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Voronoi", sf::Style::Default, settings);
 
-    while(window.isOpen())
+    while (window.isOpen())
     {
         sf::Event event;
         while (window.pollEvent(event))
