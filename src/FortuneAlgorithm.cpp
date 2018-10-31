@@ -1,5 +1,5 @@
 #include "FortuneAlgorithm.h"
-#include "Node.h"
+#include "Arc.h"
 #include "Event.h"
 
 FortuneAlgorithm::FortuneAlgorithm(std::vector<Vector2f> points) : mDiagram(std::move(points))
@@ -38,16 +38,16 @@ void FortuneAlgorithm::handleSiteEvent(Event* event)
     // 1. Check if the bachline is empty
     if (mBeachline.isEmpty())
     {
-        mBeachline.setRoot(mBeachline.createNode(site));
+        mBeachline.setRoot(mBeachline.createArc(site));
         return;
     }
     // 2. Look for the arc above the site
-    Node* arcToBreak = mBeachline.locateArcAbove(site->point, mBeachlineY);
+    Arc* arcToBreak = mBeachline.locateArcAbove(site->point, mBeachlineY);
     deleteEvent(arcToBreak);
     // 3. Replace this arc by the new arcs
-    Node* middleArc = breakArc(arcToBreak, site);
-    Node* leftArc = middleArc->prev; 
-    Node* rightArc = middleArc->next;
+    Arc* middleArc = breakArc(arcToBreak, site);
+    Arc* leftArc = middleArc->prev; 
+    Arc* rightArc = middleArc->next;
     // 4. Add an edge in the diagram
     addEdge(leftArc, middleArc);
     middleArc->rightHalfEdge = middleArc->leftHalfEdge;
@@ -64,12 +64,12 @@ void FortuneAlgorithm::handleSiteEvent(Event* event)
 void FortuneAlgorithm::handleCircleEvent(Event* event)
 {
     Vector2f point = event->point;
-    Node* arc = event->arc;
+    Arc* arc = event->arc;
     // 1. Add vertex
     const VoronoiDiagram::Vertex* vertex = mDiagram.createVertex(point);
     // 2. Delete all the events with this arc
-    Node* leftArc = arc->prev;
-    Node* rightArc = arc->next;
+    Arc* leftArc = arc->prev;
+    Arc* rightArc = arc->next;
     deleteEvent(leftArc);
     deleteEvent(rightArc);
     // 3. Update the beachline and the diagram
@@ -83,16 +83,16 @@ void FortuneAlgorithm::handleCircleEvent(Event* event)
         addEvent(leftArc, rightArc, rightArc->next);
 }
 
-Node* FortuneAlgorithm::breakArc(Node* arc, const VoronoiDiagram::Site* site)
+Arc* FortuneAlgorithm::breakArc(Arc* arc, const VoronoiDiagram::Site* site)
 {
     // Create the new subtree
-    Node* middleArc = mBeachline.createNode(site);
-    Node* leftArc = mBeachline.createNode(arc->site);
+    Arc* middleArc = mBeachline.createArc(site);
+    Arc* leftArc = mBeachline.createArc(arc->site);
     leftArc->leftHalfEdge = arc->leftHalfEdge;
-    Node* rightArc = mBeachline.createNode(arc->site);
+    Arc* rightArc = mBeachline.createArc(arc->site);
     rightArc->rightHalfEdge = arc->rightHalfEdge;
     // Insert the subtree in the beachline
-    mBeachline.replaceNode(arc, middleArc);
+    mBeachline.replaceArc(arc, middleArc);
     mBeachline.insertBefore(middleArc, leftArc);
     mBeachline.insertAfter(middleArc, rightArc);
     // Delete old arc
@@ -101,7 +101,7 @@ Node* FortuneAlgorithm::breakArc(Node* arc, const VoronoiDiagram::Site* site)
     return middleArc;
 }
 
-void FortuneAlgorithm::removeArc(Node* arc, const VoronoiDiagram::Vertex* vertex)
+void FortuneAlgorithm::removeArc(Arc* arc, const VoronoiDiagram::Vertex* vertex)
 {
     // End edges
     setDestination(arc->prev, arc, vertex);
@@ -122,17 +122,17 @@ void FortuneAlgorithm::removeArc(Node* arc, const VoronoiDiagram::Vertex* vertex
     delete arc;
 }
 
-bool FortuneAlgorithm::isMovingRight(const Node* left, const Node* right) const
+bool FortuneAlgorithm::isMovingRight(const Arc* left, const Arc* right) const
 {
     return left->site->point.y < right->site->point.y;
 }
 
-float FortuneAlgorithm::getInitialX(const Node* left, const Node* right, bool movingRight)
+float FortuneAlgorithm::getInitialX(const Arc* left, const Arc* right, bool movingRight)
 {
     return movingRight ? left->site->point.x : right->site->point.x;
 }
 
-void FortuneAlgorithm::addEdge(Node* left, Node* right)
+void FortuneAlgorithm::addEdge(Arc* left, Arc* right)
 {
     // Create two new half edges
     left->rightHalfEdge = mDiagram.createHalfEdge(left->site->face);
@@ -142,13 +142,13 @@ void FortuneAlgorithm::addEdge(Node* left, Node* right)
     right->leftHalfEdge->twin = left->rightHalfEdge;
 }
 
-void FortuneAlgorithm::setOrigin(Node* left, Node* right, const VoronoiDiagram::Vertex* vertex)
+void FortuneAlgorithm::setOrigin(Arc* left, Arc* right, const VoronoiDiagram::Vertex* vertex)
 {
     left->rightHalfEdge->destination = vertex;
     right->leftHalfEdge->origin = vertex;
 }
 
-void FortuneAlgorithm::setDestination(Node* left, Node* right, const VoronoiDiagram::Vertex* vertex)
+void FortuneAlgorithm::setDestination(Arc* left, Arc* right, const VoronoiDiagram::Vertex* vertex)
 {
     left->rightHalfEdge->origin = vertex;
     right->leftHalfEdge->destination = vertex;
@@ -160,7 +160,7 @@ void FortuneAlgorithm::setPrevHalfEdge(VoronoiDiagram::HalfEdge* prev, VoronoiDi
     next->prev = prev;
 }
 
-void FortuneAlgorithm::addEvent(Node* left, Node* middle, Node* right)
+void FortuneAlgorithm::addEvent(Arc* left, Arc* middle, Arc* right)
 {
     float y;
     Vector2f convergencePoint = computeConvergencePoint(left->site->point, middle->site->point, right->site->point, y);
@@ -182,7 +182,7 @@ void FortuneAlgorithm::addEvent(Node* left, Node* middle, Node* right)
     }
 }
 
-void FortuneAlgorithm::deleteEvent(Node* arc)
+void FortuneAlgorithm::deleteEvent(Arc* arc)
 {
     if (arc->event != nullptr)
     {

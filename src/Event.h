@@ -4,7 +4,7 @@
 #include "Vector2.h"
 #include "VoronoiDiagram.h"
 
-class Node;
+class Arc;
 
 class Event
 {
@@ -14,7 +14,7 @@ public:
     // Site event
     Event(const VoronoiDiagram::Site* site);
     // Circle event
-    Event(float y, Vector2f point, Node* arc);
+    Event(float y, Vector2f point, Arc* arc);
 
     const Type type;
     float y;
@@ -23,7 +23,7 @@ public:
     const VoronoiDiagram::Site* site;
     // Circle event
     Vector2f point;
-    Node* arc;
+    Arc* arc;
 
 };
 

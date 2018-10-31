@@ -3,7 +3,7 @@
 #include "Vector2.h"
 #include "VoronoiDiagram.h"
 
-class Node;
+class Arc;
 
 class Beachline
 {
@@ -11,37 +11,37 @@ public:
     Beachline();
     ~Beachline();
 
-    Node* createNode(const VoronoiDiagram::Site* site);
+    Arc* createArc(const VoronoiDiagram::Site* site);
     
     bool isEmpty() const;
-    bool isNil(Node* x) const;
-    void setRoot(Node* root);
+    bool isNil(Arc* x) const;
+    void setRoot(Arc* root);
 
-    Node* locateArcAbove(Vector2f point, float l) const;
-    void insertBefore(Node* x, Node* y);
-    void insertAfter(Node* x, Node* y);
-    void replaceNode(Node* oldNode, Node* newNode);
-    void remove(Node* z);
+    Arc* locateArcAbove(Vector2f point, float l) const;
+    void insertBefore(Arc* x, Arc* y);
+    void insertAfter(Arc* x, Arc* y);
+    void replaceArc(Arc* oldArc, Arc* newArc);
+    void remove(Arc* z);
 
     void display() const;
 
 private:
-    Node* mNil;
-    Node* mRoot;
+    Arc* mNil;
+    Arc* mRoot;
 
     // Utility methods
-    Node* minimum(Node* x) const;
-    void transplant(Node* u, Node* v); 
+    Arc* minimum(Arc* x) const;
+    void transplant(Arc* u, Arc* v); 
 
     // Fixup functions
-    void insertFixup(Node* z);
-    void removeFixup(Node* x);
+    void insertFixup(Arc* z);
+    void removeFixup(Arc* x);
 
     // Rotations
-    void leftRotate(Node* x);
-    void rightRotate(Node* y);
+    void leftRotate(Arc* x);
+    void rightRotate(Arc* y);
 
     float computeBreakpoint(Vector2f point1, Vector2f point2, float l) const;
 
-    void free(Node* node);
+    void free(Arc* node);
 };

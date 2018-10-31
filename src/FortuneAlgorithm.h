@@ -9,7 +9,7 @@
 #include "VoronoiDiagram.h"
 #include "Beachline.h"
 
-class Node;
+class Arc;
 class Event;
 
 class FortuneAlgorithm
@@ -33,22 +33,22 @@ private:
     void handleCircleEvent(Event* event);
 
     // Arcs
-    Node* breakArc(Node* arc, const VoronoiDiagram::Site* site);
-    void removeArc(Node* arc, const VoronoiDiagram::Vertex* vertex);
+    Arc* breakArc(Arc* arc, const VoronoiDiagram::Site* site);
+    void removeArc(Arc* arc, const VoronoiDiagram::Vertex* vertex);
 
     // Breakpoint
-    bool isMovingRight(const Node* left, const Node* right) const;
-    float getInitialX(const Node* left, const Node* right, bool movingRight);
+    bool isMovingRight(const Arc* left, const Arc* right) const;
+    float getInitialX(const Arc* left, const Arc* right, bool movingRight);
 
     // Edges
-    void addEdge(Node* left, Node* right);
-    void setOrigin(Node* left, Node* right, const VoronoiDiagram::Vertex* vertex);
-    void setDestination(Node* left, Node* right, const VoronoiDiagram::Vertex* vertex);
+    void addEdge(Arc* left, Arc* right);
+    void setOrigin(Arc* left, Arc* right, const VoronoiDiagram::Vertex* vertex);
+    void setDestination(Arc* left, Arc* right, const VoronoiDiagram::Vertex* vertex);
     void setPrevHalfEdge(VoronoiDiagram::HalfEdge* prev, VoronoiDiagram::HalfEdge* next);
 
     // Events
-    void addEvent(Node* left, Node* middle, Node* right);
-    void deleteEvent(Node* arc);
+    void addEvent(Arc* left, Arc* middle, Arc* right);
+    void deleteEvent(Arc* arc);
     Vector2f computeConvergencePoint(Vector2f point1, Vector2f point2, Vector2f point3, float& y);
 };
 

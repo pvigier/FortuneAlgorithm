@@ -4,20 +4,20 @@
 
 class Event;
 
-struct Node
+struct Arc
 {
     enum class Color{RED, BLACK};
 
-    Node* parent;
-    Node* left;
-    Node* right;
+    Arc* parent;
+    Arc* left;
+    Arc* right;
     const VoronoiDiagram::Site* site;
     VoronoiDiagram::HalfEdge* leftHalfEdge;
     VoronoiDiagram::HalfEdge* rightHalfEdge;
     Event* event;
     // Optimizations
-    Node* prev;
-    Node* next;
+    Arc* prev;
+    Arc* next;
     // Only for balancing
     Color color;
 
