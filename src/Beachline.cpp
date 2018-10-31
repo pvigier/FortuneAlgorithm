@@ -28,9 +28,9 @@ bool Beachline::isNil(Arc* x) const
     return x == mNil;
 }
 
-void Beachline::setRoot(Arc* root)
+void Beachline::setRoot(Arc* x)
 {
-    mRoot = root;
+    mRoot = x;
     mRoot->color = Arc::Color::BLACK;
 }
 
@@ -98,22 +98,22 @@ void Beachline::insertAfter(Arc* x, Arc* y)
     insertFixup(y);    
 }
 
-void Beachline::replaceArc(Arc* oldArc, Arc* newArc)
+void Beachline::replace(Arc* x, Arc* y)
 {
-    transplant(oldArc, newArc);
-    newArc->left = oldArc->left;
-    newArc->right = oldArc->right;
-    if (!isNil(newArc->left))
-        newArc->left->parent = newArc;
-    if (!isNil(newArc->right))
-        newArc->right->parent = newArc;
-    newArc->prev = oldArc->prev;
-    newArc->next = oldArc->next;
-    if (!isNil(newArc->prev))
-        newArc->prev->next = newArc;
-    if (!isNil(newArc->next))
-        newArc->next->prev = newArc;
-    newArc->color = oldArc->color;
+    transplant(x, y);
+    y->left = x->left;
+    y->right = x->right;
+    if (!isNil(y->left))
+        y->left->parent = y;
+    if (!isNil(y->right))
+        y->right->parent = y;
+    y->prev = x->prev;
+    y->next = x->next;
+    if (!isNil(y->prev))
+        y->prev->next = y;
+    if (!isNil(y->next))
+        y->next->prev = y;
+    y->color = x->color;
 }
 
 void Beachline::remove(Arc* z)
@@ -351,15 +351,15 @@ float Beachline::computeBreakpoint(Vector2f point1, Vector2f point2, float l) co
     return (-b + std::sqrt(delta)) / (2 * a);
 }
 
-void Beachline::free(Arc* node)
+void Beachline::free(Arc* x)
 {
-    if (isNil(node))
+    if (isNil(x))
         return;
     else
     {
-        free(node->left);
-        free(node->right);
-        delete node;
+        free(x->left);
+        free(x->right);
+        delete x;
     }
 }
 

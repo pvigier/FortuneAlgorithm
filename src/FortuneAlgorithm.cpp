@@ -92,12 +92,12 @@ Arc* FortuneAlgorithm::breakArc(Arc* arc, const VoronoiDiagram::Site* site)
     Arc* rightArc = mBeachline.createArc(arc->site);
     rightArc->rightHalfEdge = arc->rightHalfEdge;
     // Insert the subtree in the beachline
-    mBeachline.replaceArc(arc, middleArc);
+    mBeachline.replace(arc, middleArc);
     mBeachline.insertBefore(middleArc, leftArc);
     mBeachline.insertAfter(middleArc, rightArc);
     // Delete old arc
     delete arc;
-    // Return the root of the subtree
+    // Return the middle arc
     return middleArc;
 }
 

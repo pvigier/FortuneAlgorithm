@@ -15,12 +15,12 @@ public:
     
     bool isEmpty() const;
     bool isNil(Arc* x) const;
-    void setRoot(Arc* root);
+    void setRoot(Arc* x);
 
     Arc* locateArcAbove(Vector2f point, float l) const;
     void insertBefore(Arc* x, Arc* y);
     void insertAfter(Arc* x, Arc* y);
-    void replaceArc(Arc* oldArc, Arc* newArc);
+    void replace(Arc* x, Arc* y);
     void remove(Arc* z);
 
     void display() const;
@@ -43,5 +43,5 @@ private:
 
     float computeBreakpoint(Vector2f point1, Vector2f point2, float l) const;
 
-    void free(Arc* node);
+    void free(Arc* x);
 };
