@@ -1,12 +1,11 @@
 #include "Arc.h"
-#include <iostream>
 
-void Arc::display(std::string tabs) const
+std::ostream& Arc::print(std::ostream& os, std::string tabs) const
 {
-    //std::cout << tabs << site->index << ' ' /*<< this << " (parent: " << parent << ", prev: " << prev << ", next: " << next << ") -> " << left << " " << right << std::endl*/;
-    std::cout << leftHalfEdge << ' ' << rightHalfEdge << std::endl;
+    os << leftHalfEdge << ' ' << rightHalfEdge << std::endl;
     if (left != nullptr)
-        left->display(tabs + '\t');
+        left->print(os, tabs + '\t');
     if (right != nullptr)
-        right->display(tabs + '\t');
+        right->print(os, tabs + '\t');
+    return os;
 }

@@ -27,9 +27,9 @@ void FortuneAlgorithm::construct()
     }
 }
 
-VoronoiDiagram FortuneAlgorithm::getDiagram() const
+VoronoiDiagram FortuneAlgorithm::getDiagram()
 {
-    return mDiagram;
+    return std::move(mDiagram);
 }
 
 void FortuneAlgorithm::handleSiteEvent(Event* event)
@@ -202,5 +202,4 @@ Vector2f FortuneAlgorithm::computeConvergencePoint(Vector2f point1, Vector2f poi
     y = center.y - r;
     return center;
 }
-
 

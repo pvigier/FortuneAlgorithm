@@ -23,6 +23,6 @@ struct Arc
     // Only for balancing
     Color color;
 
-    void display(std::string tabs) const;
+    std::ostream& print(std::ostream& os, std::string tabs) const;
 };
 

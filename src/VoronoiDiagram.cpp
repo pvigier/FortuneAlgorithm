@@ -12,6 +12,31 @@ VoronoiDiagram::VoronoiDiagram(std::vector<Vector2f> points)
     }
 }
 
+const VoronoiDiagram::Site* VoronoiDiagram::getSite(std::size_t i) const
+{
+    return &mSites[i];
+}
+
+std::size_t VoronoiDiagram::getNbSites() const
+{
+    return mSites.size();
+}
+
+const VoronoiDiagram::Face* VoronoiDiagram::getFace(std::size_t i) const
+{
+    return &mFaces[i];
+}
+
+const std::list<VoronoiDiagram::Vertex>& VoronoiDiagram::getVertices() const
+{
+    return mVertices;
+}
+
+const std::list<VoronoiDiagram::HalfEdge>& VoronoiDiagram::getHalfEdges() const
+{
+    return mHalfEdges;
+}
+
 const VoronoiDiagram::Vertex* VoronoiDiagram::createVertex(Vector2f point)
 {
     mVertices.push_back(VoronoiDiagram::Vertex{point, nullptr});
@@ -26,27 +51,3 @@ VoronoiDiagram::HalfEdge* VoronoiDiagram::createHalfEdge(Face* face)
     return &mHalfEdges.back();
 }
 
-const VoronoiDiagram::Site* VoronoiDiagram::getSite(std::size_t i) const
-{
-    return &mSites[i];
-}
-
-std::size_t VoronoiDiagram::getNbSites() const
-{
-    return mSites.size();
-}
-
-const std::list<VoronoiDiagram::Vertex>& VoronoiDiagram::getVertices() const
-{
-    return mVertices;
-}
-
-const std::list<VoronoiDiagram::HalfEdge>& VoronoiDiagram::getHalfEdges() const
-{
-    return mHalfEdges;
-}
-
-const VoronoiDiagram::Face* VoronoiDiagram::getFace(std::size_t i) const
-{
-    return &mFaces[i];
-}

@@ -60,7 +60,7 @@ public:
 
     // Print 
 
-    std::ostream& print(std::ostream& os, int i = 0, std::string tabs = "")
+    std::ostream& print(std::ostream& os, int i = 0, std::string tabs = "") const
     {
         if(i < mElements.size())
         {

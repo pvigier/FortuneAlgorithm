@@ -11,6 +11,12 @@ public:
     Beachline();
     ~Beachline();
 
+    // Remove copy and move operations
+    Beachline(const Beachline&) = delete;
+    Beachline& operator=(const Beachline&) = delete;
+    Beachline(Beachline&&) = delete;
+    Beachline& operator=(Beachline&&) = delete;
+
     Arc* createArc(const VoronoiDiagram::Site* site);
     
     bool isEmpty() const;
@@ -23,7 +29,7 @@ public:
     void replace(Arc* x, Arc* y);
     void remove(Arc* z);
 
-    void display() const;
+    std::ostream& print(std::ostream& os) const;
 
 private:
     Arc* mNil;
@@ -45,3 +51,5 @@ private:
 
     void free(Arc* x);
 };
+
+std::ostream& operator<<(std::ostream& os, const Beachline& beachline);

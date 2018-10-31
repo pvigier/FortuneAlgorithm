@@ -20,7 +20,7 @@ public:
 
     void construct();
 
-    VoronoiDiagram getDiagram() const;
+    VoronoiDiagram getDiagram();
 
 private:
     VoronoiDiagram mDiagram;

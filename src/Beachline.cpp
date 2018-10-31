@@ -158,9 +158,9 @@ void Beachline::remove(Arc* z)
         z->next->prev = z->prev;
 }
 
-void Beachline::display() const
+std::ostream& Beachline::print(std::ostream& os) const
 {
-    mRoot->display("");
+    return mRoot->print(os, "");
 }
 
 Arc* Beachline::minimum(Arc* x) const
@@ -363,3 +363,7 @@ void Beachline::free(Arc* x)
     }
 }
 
+std::ostream& operator<<(std::ostream& os, const Beachline& beachline)
+{
+    return beachline.print(os);
+}

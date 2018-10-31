@@ -5,7 +5,8 @@
 #include <list>
 // My includes
 #include "Vector2.h"
-//#include "Graph.h"
+
+class FortuneAlgorithm;
 
 class VoronoiDiagram
 {
@@ -44,18 +45,29 @@ public:
 
     VoronoiDiagram(std::vector<Vector2f> points);
 
+    // Remove copy operations
+    VoronoiDiagram(const VoronoiDiagram&) = delete;
+    VoronoiDiagram& operator=(const VoronoiDiagram&) = delete;
+
+    // Move operations
+    VoronoiDiagram(VoronoiDiagram&&) = default;
+    VoronoiDiagram& operator=(VoronoiDiagram&&) = default;
+
     const Site* getSite(std::size_t i) const;
     std::size_t getNbSites() const;
-    const Vertex* createVertex(Vector2f point);
-    HalfEdge* createHalfEdge(Face* face);
     const Face* getFace(std::size_t i) const;
-
     const std::list<Vertex>& getVertices() const;
     const std::list<HalfEdge>& getHalfEdges() const;
 
 private:
     std::vector<Site> mSites;
+    std::vector<Face> mFaces;
     std::list<Vertex> mVertices;
     std::list<HalfEdge> mHalfEdges;
-    std::vector<Face> mFaces;
+
+    // Diagram construction
+    friend FortuneAlgorithm;
+
+    const Vertex* createVertex(Vector2f point);
+    HalfEdge* createHalfEdge(Face* face);
 };
