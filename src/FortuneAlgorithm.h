@@ -16,6 +16,7 @@ class FortuneAlgorithm
 {
 public:
     FortuneAlgorithm(std::vector<Vector2f> points);
+    ~FortuneAlgorithm();
 
     void construct();
 

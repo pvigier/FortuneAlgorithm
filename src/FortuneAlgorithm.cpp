@@ -7,23 +7,23 @@ FortuneAlgorithm::FortuneAlgorithm(std::vector<Vector2f> points) : mDiagram(std:
 
 }
 
+FortuneAlgorithm::~FortuneAlgorithm() = default;
+
 void FortuneAlgorithm::construct()
 {
     // Initialize event queue
     for (std::size_t i = 0; i < mDiagram.getNbSites(); ++i)
-        mEvents.push(new Event(mDiagram.getSite(i)));
+        mEvents.push(std::make_unique<Event>(mDiagram.getSite(i)));
 
     // Process events
     while (!mEvents.isEmpty())
     {
-        Event* event = mEvents.top();
-        mEvents.pop();
+        std::unique_ptr<Event> event = mEvents.pop();
         mBeachlineY = event->y;
         if(event->type == Event::Type::SITE)
-            handleSiteEvent(event);
+            handleSiteEvent(event.get());
         else
-            handleCircleEvent(event);
-        delete event;
+            handleCircleEvent(event.get());
     }
 }
 
@@ -176,9 +176,9 @@ void FortuneAlgorithm::addEvent(Node* left, Node* middle, Node* right)
         (!rightBreakpointMovingRight && rightInitialX > convergencePoint.x));
     if (isValid && isBelow)
     {
-        Event* event = new Event(y, convergencePoint, middle);
-        middle->event = event;
-        mEvents.push(event);
+        std::unique_ptr<Event> event = std::make_unique<Event>(y, convergencePoint, middle);
+        middle->event = event.get();
+        mEvents.push(std::move(event));
     }
 }
 
@@ -187,7 +187,6 @@ void FortuneAlgorithm::deleteEvent(Node* arc)
     if (arc->event != nullptr)
     {
         mEvents.remove(arc->event->index);
-        delete arc->event;
         arc->event = nullptr;
     }
 }

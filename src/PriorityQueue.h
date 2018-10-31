@@ -5,6 +5,7 @@
 // STL
 #include <ostream>
 #include <vector>
+#include <memory>
 
 template<typename T>
 class PriorityQueue
@@ -17,39 +18,26 @@ public:
 
     // Accessors
 
-    T* top() 
-    {
-        return mElements[0];
-    }
-
-    const T* top() const
-    {
-        return mElements[0];
-    }
-    
     bool isEmpty() const
     {
         return mElements.empty();
     }
 
-    std::size_t getSize() const
-    {
-        return mElements.size();
-    }
-
     // Operations
 
-    void pop()
+    std::unique_ptr<T> pop()
     {
         swap(0, mElements.size() - 1);
+        auto top = std::move(mElements.back());
         mElements.pop_back();
         siftDown(0);
+        return top;
     }
 
-    void push(T* elem)
+    void push(std::unique_ptr<T> elem)
     {
         elem->index = mElements.size();
-        mElements.emplace_back(elem);
+        mElements.emplace_back(std::move(elem));
         siftUp(mElements.size() - 1);
     }
 
@@ -66,7 +54,8 @@ public:
     {
         swap(i, mElements.size() - 1);
         mElements.pop_back();
-        update(i);
+        if (i < mElements.size())
+            update(i);
     }
 
     // Print 
@@ -83,7 +72,7 @@ public:
     }
 
 private:
-    std::vector<T*> mElements;
+    std::vector<std::unique_ptr<T>> mElements;
 
     // Accessors
 
@@ -132,10 +121,10 @@ private:
 
     inline void swap(std::size_t i, std::size_t j)
     {
-        T* tmp = mElements[i];
-        mElements[i] = mElements[j];
+        auto tmp = std::move(mElements[i]);
+        mElements[i] = std::move(mElements[j]);
+        mElements[j] = std::move(tmp);
         mElements[i]->index = i;
-        mElements[j] = tmp;
         mElements[j]->index = j;
     }
 };
