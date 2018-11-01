@@ -20,7 +20,7 @@ public:
     Arc* createArc(const VoronoiDiagram::Site* site);
     
     bool isEmpty() const;
-    bool isNil(Arc* x) const;
+    bool isNil(const Arc* x) const;
     void setRoot(Arc* x);
 
     Arc* locateArcAbove(Vector2f point, float l) const;
@@ -50,6 +50,8 @@ private:
     float computeBreakpoint(Vector2f point1, Vector2f point2, float l) const;
 
     void free(Arc* x);
+
+    std::ostream& printArc(std::ostream& os, const Arc* arc, std::string tabs = "") const;
 };
 
 std::ostream& operator<<(std::ostream& os, const Beachline& beachline);

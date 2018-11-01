@@ -23,7 +23,7 @@ bool Beachline::isEmpty() const
     return isNil(mRoot);
 }
 
-bool Beachline::isNil(Arc* x) const
+bool Beachline::isNil(const Arc* x) const
 {
     return x == mNil;
 }
@@ -160,7 +160,7 @@ void Beachline::remove(Arc* z)
 
 std::ostream& Beachline::print(std::ostream& os) const
 {
-    return mRoot->print(os, "");
+    return printArc(os, mRoot);
 }
 
 Arc* Beachline::minimum(Arc* x) const
@@ -361,6 +361,16 @@ void Beachline::free(Arc* x)
         free(x->right);
         delete x;
     }
+}
+
+std::ostream& Beachline::printArc(std::ostream& os, const Arc* arc, std::string tabs) const
+{
+    os << tabs << arc->site->index << ' ' << arc->leftHalfEdge << ' ' << arc->rightHalfEdge << std::endl;
+    if (!isNil(arc->left))
+        printArc(os, arc->left, tabs + '\t');
+    if (!isNil(arc->right))
+        printArc(os, arc->right, tabs + '\t');
+    return os;
 }
 
 std::ostream& operator<<(std::ostream& os, const Beachline& beachline)

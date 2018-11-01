@@ -22,7 +22,5 @@ struct Arc
     Arc* next;
     // Only for balancing
     Color color;
-
-    std::ostream& print(std::ostream& os, std::string tabs) const;
 };
 
