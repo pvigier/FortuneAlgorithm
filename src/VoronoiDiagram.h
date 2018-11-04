@@ -24,13 +24,13 @@ public:
     struct Vertex
     {
         Vector2f point;
-        HalfEdge* incidentEdge;
+        //HalfEdge* incidentEdge;
     };
 
     struct HalfEdge
     {
-        const Vertex* origin;
-        const Vertex* destination;
+        Vertex* origin;
+        Vertex* destination;
         HalfEdge* twin;
         Face* incidentFace;
         HalfEdge* prev;
@@ -43,7 +43,7 @@ public:
         HalfEdge* outerComponent;
     };
 
-    VoronoiDiagram(std::vector<Vector2f> points);
+    VoronoiDiagram(const std::vector<Vector2f>& points);
 
     // Remove copy operations
     VoronoiDiagram(const VoronoiDiagram&) = delete;
@@ -53,9 +53,9 @@ public:
     VoronoiDiagram(VoronoiDiagram&&) = default;
     VoronoiDiagram& operator=(VoronoiDiagram&&) = default;
 
-    const Site* getSite(std::size_t i) const;
+    Site* getSite(std::size_t i);
     std::size_t getNbSites() const;
-    const Face* getFace(std::size_t i) const;
+    Face* getFace(std::size_t i);
     const std::list<Vertex>& getVertices() const;
     const std::list<HalfEdge>& getHalfEdges() const;
 
@@ -68,6 +68,6 @@ private:
     // Diagram construction
     friend FortuneAlgorithm;
 
-    const Vertex* createVertex(Vector2f point);
+    Vertex* createVertex(Vector2f point);
     HalfEdge* createHalfEdge(Face* face);
 };

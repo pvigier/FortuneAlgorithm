@@ -1,6 +1,6 @@
 #include "Event.h"
 
-Event::Event(const VoronoiDiagram::Site* site) : type(Type::SITE), y(site->point.y), index(-1), site(site)
+Event::Event(VoronoiDiagram::Site* site) : type(Type::SITE), y(site->point.y), index(-1), site(site)
 {
 
 }

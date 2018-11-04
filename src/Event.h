@@ -12,7 +12,7 @@ public:
     enum class Type{SITE, CIRCLE};
 
     // Site event
-    Event(const VoronoiDiagram::Site* site);
+    Event(VoronoiDiagram::Site* site);
     // Circle event
     Event(float y, Vector2f point, Arc* arc);
 
@@ -20,7 +20,7 @@ public:
     float y;
     int index;
     // Site event
-    const VoronoiDiagram::Site* site;
+    VoronoiDiagram::Site* site;
     // Circle event
     Vector2f point;
     Arc* arc;
