@@ -22,6 +22,7 @@ public:
     bool isEmpty() const;
     bool isNil(const Arc* x) const;
     void setRoot(Arc* x);
+    Arc* getLeftmostArc() const;
 
     Arc* locateArcAbove(Vector2f point, float l) const;
     void insertBefore(Arc* x, Arc* y);

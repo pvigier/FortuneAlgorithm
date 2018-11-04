@@ -34,6 +34,14 @@ void Beachline::setRoot(Arc* x)
     mRoot->color = Arc::Color::BLACK;
 }
 
+Arc* Beachline::getLeftmostArc() const
+{
+    Arc* x = mRoot;
+    while (!isNil(x->prev))
+        x = x->prev;
+    return x;
+}
+
 Arc* Beachline::locateArcAbove(Vector2f point, float l) const
 {
     Arc* node = mRoot;

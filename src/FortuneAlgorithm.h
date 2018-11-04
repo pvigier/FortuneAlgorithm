@@ -15,10 +15,20 @@ class Event;
 class FortuneAlgorithm
 {
 public:
+    // Be careful, y-axis is oriented to the top like in math
+    struct Box
+    {
+        float left;
+        float bottom;
+        float right;
+        float top;
+    };
+
     FortuneAlgorithm(std::vector<Vector2f> points);
     ~FortuneAlgorithm();
 
     void construct();
+    void bound(Box box);
 
     VoronoiDiagram getDiagram();
 
@@ -50,5 +60,11 @@ private:
     void addEvent(Arc* left, Arc* middle, Arc* right);
     void deleteEvent(Arc* arc);
     Vector2f computeConvergencePoint(Vector2f point1, Vector2f point2, Vector2f point3, float& y) const;
+
+    // Bounding
+    enum class Side : int {LEFT, BOTTOM, RIGHT, TOP};
+
+    Side getBoxIntersection(Box box, Vector2f origin, Vector2f direction, Vector2f& intersection) const; 
+    VoronoiDiagram::Vertex* createCorner(Box box, Side side);
 };
 

@@ -203,3 +203,169 @@ Vector2f FortuneAlgorithm::computeConvergencePoint(Vector2f point1, Vector2f poi
     return center;
 }
 
+// Bound
+
+#include <tuple>
+#include <algorithm>
+#include <deque>
+
+void FortuneAlgorithm::bound(Box box)
+{
+    // Retrieve all non bounded half edges from the beach line
+    std::cout << mBeachline << std::endl;
+    std::vector<std::array<std::deque<std::tuple<VoronoiDiagram::Vertex*, VoronoiDiagram::HalfEdge*, bool>>, 4>> vertices(mDiagram.getNbSites());
+    if (!mBeachline.isEmpty())
+    {
+        Arc* leftArc = mBeachline.getLeftmostArc();
+        Arc* rightArc = leftArc->next;
+        while (!mBeachline.isNil(rightArc))
+        {
+            //std::cout << leftArc->site->index << ' ' << rightArc->site->index << ' ' << leftArc->rightHalfEdge << ' ' << rightArc->leftHalfEdge << std::endl;
+            // Bound the edge
+            Vector2f direction = (leftArc->site->point - rightArc->site->point).getOrthogonal();
+            Vector2f origin = (leftArc->site->point + rightArc->site->point) * 0.5f;
+            // Line-box intersection
+            Vector2f intersection;
+            Side side = getBoxIntersection(box, origin, direction, intersection);
+            std::cout << static_cast<int>(side) << ' ' << intersection << std::endl;
+            // Create a new vertex and ends the half edges
+            VoronoiDiagram::Vertex* vertex = mDiagram.createVertex(intersection);
+            setDestination(leftArc, rightArc, vertex);
+            // Store the vertex on the boundaries
+            vertices[leftArc->site->index][static_cast<int>(side)].emplace_back(std::make_tuple(vertex, leftArc->rightHalfEdge, false));
+            vertices[rightArc->site->index][static_cast<int>(side)].emplace_back(std::make_tuple(vertex, rightArc->leftHalfEdge, true));
+            // Next edge
+            leftArc = rightArc;
+            rightArc = rightArc->next;
+        }
+    }
+    // Sort the vertices in trigonometric order for each side
+    for (std::size_t i = 0; i < mDiagram.getNbSites(); ++i)
+    {
+        std::sort(vertices[i][0].begin(), vertices[i][0].end(), 
+            [](const auto& lhs, const auto& rhs){ return std::get<0>(lhs)->point.y > std::get<0>(rhs)->point.y; });
+        std::sort(vertices[i][1].begin(), vertices[i][1].end(), 
+            [](const auto& lhs, const auto& rhs){ return std::get<0>(lhs)->point.x < std::get<0>(rhs)->point.x; });
+        std::sort(vertices[i][2].begin(), vertices[i][2].end(), 
+            [](const auto& lhs, const auto& rhs){ return std::get<0>(lhs)->point.y < std::get<0>(rhs)->point.y; });
+        std::sort(vertices[i][3].begin(), vertices[i][3].end(), 
+            [](const auto& lhs, const auto& rhs){ return std::get<0>(lhs)->point.x > std::get<0>(rhs)->point.x; });
+    }
+    // Join the half edges
+    std::array<VoronoiDiagram::Vertex*, 4> corners;
+    corners.fill(nullptr);
+    for (std::size_t i = 0; i < mDiagram.getNbSites(); ++i)
+    {
+        std::cout << "\nSite " << i << std::endl;
+        for (std::size_t side = 0; side < 4; ++side)
+        {
+            std::cout << "Side " << side << std::endl;
+            for (std::size_t j = 0; j < vertices[i][side].size(); ++j)
+            {
+                std::cout << "Vertex " << j << ' ' << std::get<0>(vertices[i][side][j])->point << ' ' << std::get<2>(vertices[i][side][j]) << std::endl;
+                VoronoiDiagram::HalfEdge* halfEdge = std::get<1>(vertices[i][side][j]);
+                bool isOrigin = std::get<2>(vertices[i][side][j]);
+                if (isOrigin)
+                {
+                    // Find next vertex
+                    VoronoiDiagram::Vertex* nextVertex;
+                    if (j == vertices[i][side].size() - 1)
+                    {
+                        std::size_t nextSide = (side + 1) % 4;
+                        if (corners[nextSide] == nullptr)
+                            corners[nextSide] = createCorner(box, static_cast<Side>(nextSide));
+                        nextVertex = corners[nextSide];
+                    }
+                    else
+                        nextVertex = std::get<0>(vertices[i][side][j + 1]);
+                    // Create a new half edge
+                    VoronoiDiagram::HalfEdge* newHalfEdge = mDiagram.createHalfEdge(mDiagram.getFace(i));
+                    newHalfEdge->origin = std::get<0>(vertices[i][side][j]);
+                    newHalfEdge->destination = nextVertex;
+                    newHalfEdge->prev = halfEdge;
+                    halfEdge->next = newHalfEdge;
+                    if (j == vertices[i][side].size() - 1)
+                    {
+                        vertices[i][(side + 1) % 4].push_front(std::make_tuple(nextVertex, newHalfEdge, true));
+                    }
+                }
+                else
+                {
+                    // Find previous edge
+                    VoronoiDiagram::HalfEdge* prevHalfEdge;
+                    if (j == 0)
+                    {
+                        VoronoiDiagram::Vertex* prevVertex;
+                        if (corners[side] == nullptr)
+                            corners[side] = createCorner(box, static_cast<Side>(side));
+                        prevVertex = corners[side];
+                        // Create a new half edge
+                        prevHalfEdge = mDiagram.createHalfEdge(mDiagram.getFace(i));
+                        prevHalfEdge->origin = prevVertex;
+                        prevHalfEdge->destination = std::get<0>(vertices[i][side][j]);
+                        vertices[i][(side + 3) % 4].push_back(std::make_tuple(prevVertex, prevHalfEdge, false));
+                    }
+                    else
+                        prevHalfEdge = std::get<1>(vertices[i][side][j - 1])->next;
+                    prevHalfEdge->next = halfEdge;
+                    halfEdge->prev = prevHalfEdge;
+                }
+            }
+        }
+    }
+}
+
+FortuneAlgorithm::Side FortuneAlgorithm::getBoxIntersection(Box box, Vector2f origin, Vector2f direction, Vector2f& intersection) const
+{
+    std::cout << origin << ' ' << direction << std::endl;
+    Side side;
+    float t;
+    if (direction.x > 0)
+    {
+        t = (box.right - origin.x) / direction.x;
+        side = Side::RIGHT;
+        intersection = origin + t * direction;
+    }
+    else
+    {
+        t = (box.left - origin.x) / direction.x;
+        side = Side::LEFT;
+        intersection = origin + t * direction;
+    }
+    if (direction.y > 0)
+    {
+        float newT = (box.top - origin.y) / direction.y;
+        if (newT < t)
+        {
+            side = Side::TOP;
+            intersection = origin + newT * direction;
+        }
+    }
+    else
+    {
+        float newT = (box.bottom - origin.y) / direction.y;
+        if (newT < t)
+        {
+            side = Side::BOTTOM;
+            intersection = origin + newT * direction;
+        }
+    }
+    return side;
+}
+
+VoronoiDiagram::Vertex* FortuneAlgorithm::createCorner(Box box, Side side)
+{
+    switch (side)
+    {
+        case Side::LEFT:
+            return mDiagram.createVertex(Vector2f(box.left, box.top));
+        case Side::BOTTOM:
+            return mDiagram.createVertex(Vector2f(box.left, box.bottom));
+        case Side::RIGHT:
+            return mDiagram.createVertex(Vector2f(box.right, box.bottom));
+        case Side::TOP:
+            return mDiagram.createVertex(Vector2f(box.right, box.top));
+        default:
+            return nullptr;
+    }
+}
