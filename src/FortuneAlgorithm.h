@@ -64,6 +64,13 @@ private:
     // Bounding
     enum class Side : int {LEFT, BOTTOM, RIGHT, TOP};
 
+    struct LinkedVertex
+    {
+        VoronoiDiagram::HalfEdge* prevHalfEdge;
+        VoronoiDiagram::Vertex* vertex;
+        VoronoiDiagram::HalfEdge* nextHalfEdge;
+    };
+
     Side getBoxIntersection(Box box, Vector2f origin, Vector2f direction, Vector2f& intersection) const; 
     VoronoiDiagram::Vertex* createCorner(Box box, Side side);
 };

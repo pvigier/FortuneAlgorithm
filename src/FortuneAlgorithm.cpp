@@ -205,67 +205,59 @@ Vector2f FortuneAlgorithm::computeConvergencePoint(Vector2f point1, Vector2f poi
 
 // Bound
 
-#include <tuple>
 #include <algorithm>
 #include <deque>
 
 void FortuneAlgorithm::bound(Box box)
 {
     // Retrieve all non bounded half edges from the beach line
-    std::cout << mBeachline << std::endl;
-    std::vector<std::array<std::deque<std::tuple<VoronoiDiagram::Vertex*, VoronoiDiagram::HalfEdge*, bool>>, 4>> vertices(mDiagram.getNbSites());
+    std::vector<std::array<std::deque<LinkedVertex>, 4>> vertices(mDiagram.getNbSites());
     if (!mBeachline.isEmpty())
     {
         Arc* leftArc = mBeachline.getLeftmostArc();
         Arc* rightArc = leftArc->next;
         while (!mBeachline.isNil(rightArc))
         {
-            //std::cout << leftArc->site->index << ' ' << rightArc->site->index << ' ' << leftArc->rightHalfEdge << ' ' << rightArc->leftHalfEdge << std::endl;
             // Bound the edge
             Vector2f direction = (leftArc->site->point - rightArc->site->point).getOrthogonal();
             Vector2f origin = (leftArc->site->point + rightArc->site->point) * 0.5f;
             // Line-box intersection
             Vector2f intersection;
             Side side = getBoxIntersection(box, origin, direction, intersection);
-            std::cout << static_cast<int>(side) << ' ' << intersection << std::endl;
             // Create a new vertex and ends the half edges
             VoronoiDiagram::Vertex* vertex = mDiagram.createVertex(intersection);
             setDestination(leftArc, rightArc, vertex);
             // Store the vertex on the boundaries
-            vertices[leftArc->site->index][static_cast<int>(side)].emplace_back(std::make_tuple(vertex, leftArc->rightHalfEdge, false));
-            vertices[rightArc->site->index][static_cast<int>(side)].emplace_back(std::make_tuple(vertex, rightArc->leftHalfEdge, true));
+            vertices[leftArc->site->index][static_cast<int>(side)].emplace_back(LinkedVertex{nullptr, vertex, leftArc->rightHalfEdge});
+            vertices[rightArc->site->index][static_cast<int>(side)].emplace_back(LinkedVertex{rightArc->leftHalfEdge, vertex, nullptr});
             // Next edge
             leftArc = rightArc;
             rightArc = rightArc->next;
         }
     }
-    // Sort the vertices in trigonometric order for each side
+    // Sort the vertices in trigonometric order for each side of each cell
     for (std::size_t i = 0; i < mDiagram.getNbSites(); ++i)
     {
         std::sort(vertices[i][0].begin(), vertices[i][0].end(), 
-            [](const auto& lhs, const auto& rhs){ return std::get<0>(lhs)->point.y > std::get<0>(rhs)->point.y; });
+            [](const auto& lhs, const auto& rhs){ return lhs.vertex->point.y > rhs.vertex->point.y; });
         std::sort(vertices[i][1].begin(), vertices[i][1].end(), 
-            [](const auto& lhs, const auto& rhs){ return std::get<0>(lhs)->point.x < std::get<0>(rhs)->point.x; });
+            [](const auto& lhs, const auto& rhs){ return lhs.vertex->point.x < rhs.vertex->point.x; });
         std::sort(vertices[i][2].begin(), vertices[i][2].end(), 
-            [](const auto& lhs, const auto& rhs){ return std::get<0>(lhs)->point.y < std::get<0>(rhs)->point.y; });
+            [](const auto& lhs, const auto& rhs){ return lhs.vertex->point.y < rhs.vertex->point.y; });
         std::sort(vertices[i][3].begin(), vertices[i][3].end(), 
-            [](const auto& lhs, const auto& rhs){ return std::get<0>(lhs)->point.x > std::get<0>(rhs)->point.x; });
+            [](const auto& lhs, const auto& rhs){ return lhs.vertex->point.x > rhs.vertex->point.x; });
     }
     // Join the half edges
     std::array<VoronoiDiagram::Vertex*, 4> corners;
     corners.fill(nullptr);
     for (std::size_t i = 0; i < mDiagram.getNbSites(); ++i)
     {
-        std::cout << "\nSite " << i << std::endl;
         for (std::size_t side = 0; side < 4; ++side)
         {
-            std::cout << "Side " << side << std::endl;
             for (std::size_t j = 0; j < vertices[i][side].size(); ++j)
             {
-                std::cout << "Vertex " << j << ' ' << std::get<0>(vertices[i][side][j])->point << ' ' << std::get<2>(vertices[i][side][j]) << std::endl;
-                VoronoiDiagram::HalfEdge* halfEdge = std::get<1>(vertices[i][side][j]);
-                bool isOrigin = std::get<2>(vertices[i][side][j]);
-                if (isOrigin)
+                LinkedVertex& linkedVertex = vertices[i][side][j];
+                if (linkedVertex.nextHalfEdge == nullptr)
                 {
                     // Find next vertex
                     VoronoiDiagram::Vertex* nextVertex;
@@ -277,17 +269,15 @@ void FortuneAlgorithm::bound(Box box)
                         nextVertex = corners[nextSide];
                     }
                     else
-                        nextVertex = std::get<0>(vertices[i][side][j + 1]);
+                        nextVertex = vertices[i][side][j + 1].vertex;
                     // Create a new half edge
                     VoronoiDiagram::HalfEdge* newHalfEdge = mDiagram.createHalfEdge(mDiagram.getFace(i));
-                    newHalfEdge->origin = std::get<0>(vertices[i][side][j]);
+                    newHalfEdge->origin = linkedVertex.vertex;
                     newHalfEdge->destination = nextVertex;
-                    newHalfEdge->prev = halfEdge;
-                    halfEdge->next = newHalfEdge;
+                    newHalfEdge->prev = linkedVertex.prevHalfEdge;
+                    linkedVertex.prevHalfEdge->next = newHalfEdge;
                     if (j == vertices[i][side].size() - 1)
-                    {
-                        vertices[i][(side + 1) % 4].push_front(std::make_tuple(nextVertex, newHalfEdge, true));
-                    }
+                        vertices[i][(side + 1) % 4].emplace_front(LinkedVertex{newHalfEdge, nextVertex, nullptr});
                 }
                 else
                 {
@@ -302,13 +292,13 @@ void FortuneAlgorithm::bound(Box box)
                         // Create a new half edge
                         prevHalfEdge = mDiagram.createHalfEdge(mDiagram.getFace(i));
                         prevHalfEdge->origin = prevVertex;
-                        prevHalfEdge->destination = std::get<0>(vertices[i][side][j]);
-                        vertices[i][(side + 3) % 4].push_back(std::make_tuple(prevVertex, prevHalfEdge, false));
+                        prevHalfEdge->destination = linkedVertex.vertex;
+                        vertices[i][(side + 3) % 4].push_back(LinkedVertex{nullptr, prevVertex, prevHalfEdge});
                     }
                     else
-                        prevHalfEdge = std::get<1>(vertices[i][side][j - 1])->next;
-                    prevHalfEdge->next = halfEdge;
-                    halfEdge->prev = prevHalfEdge;
+                        prevHalfEdge = vertices[i][side][j - 1].prevHalfEdge->next;
+                    prevHalfEdge->next = linkedVertex.nextHalfEdge;
+                    linkedVertex.nextHalfEdge->prev = prevHalfEdge;
                 }
             }
         }
