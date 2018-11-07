@@ -168,7 +168,14 @@ void Beachline::remove(Arc* z)
 
 std::ostream& Beachline::print(std::ostream& os) const
 {
-    return printArc(os, mRoot);
+    //return printArc(os, mRoot);
+    Arc* arc = getLeftmostArc();
+    while (!isNil(arc))
+    {
+        os << arc->site->index << ' ';
+        arc = arc->next;
+    }
+    return os;
 }
 
 Arc* Beachline::minimum(Arc* x) const
