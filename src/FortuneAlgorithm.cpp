@@ -164,7 +164,7 @@ void FortuneAlgorithm::addEvent(Arc* left, Arc* middle, Arc* right)
 {
     double y;
     Vector2 convergencePoint = computeConvergencePoint(left->site->point, middle->site->point, right->site->point, y);
-    bool isBelow = ((mBeachlineY - y) / std::abs(mBeachlineY)) > 1e-6;
+    bool isBelow = y <= mBeachlineY;
     bool leftBreakpointMovingRight = isMovingRight(left, middle);
     bool rightBreakpointMovingRight = isMovingRight(middle, right);
     double leftInitialX = getInitialX(left, middle, leftBreakpointMovingRight);
