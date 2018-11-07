@@ -17,13 +17,13 @@ public:
     struct Site
     {
         std::size_t index;
-        Vector2f point;
+        Vector2 point;
         Face* face;
     };
 
     struct Vertex
     {
-        Vector2f point;
+        Vector2 point;
         //HalfEdge* incidentEdge;
     };
 
@@ -43,7 +43,7 @@ public:
         HalfEdge* outerComponent;
     };
 
-    VoronoiDiagram(const std::vector<Vector2f>& points);
+    VoronoiDiagram(const std::vector<Vector2>& points);
 
     // Remove copy operations
     VoronoiDiagram(const VoronoiDiagram&) = delete;
@@ -68,6 +68,6 @@ private:
     // Diagram construction
     friend FortuneAlgorithm;
 
-    Vertex* createVertex(Vector2f point);
+    Vertex* createVertex(Vector2 point);
     HalfEdge* createHalfEdge(Face* face);
 };

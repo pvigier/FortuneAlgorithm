@@ -2,7 +2,7 @@
 #include "Arc.h"
 #include "Event.h"
 
-FortuneAlgorithm::FortuneAlgorithm(std::vector<Vector2f> points) : mDiagram(std::move(points))
+FortuneAlgorithm::FortuneAlgorithm(std::vector<Vector2> points) : mDiagram(std::move(points))
 {
 
 }
@@ -63,7 +63,7 @@ void FortuneAlgorithm::handleSiteEvent(Event* event)
 
 void FortuneAlgorithm::handleCircleEvent(Event* event)
 {
-    Vector2f point = event->point;
+    Vector2 point = event->point;
     Arc* arc = event->arc;
     // 1. Add vertex
     VoronoiDiagram::Vertex* vertex = mDiagram.createVertex(point);
@@ -127,7 +127,7 @@ bool FortuneAlgorithm::isMovingRight(const Arc* left, const Arc* right) const
     return left->site->point.y < right->site->point.y;
 }
 
-float FortuneAlgorithm::getInitialX(const Arc* left, const Arc* right, bool movingRight) const
+double FortuneAlgorithm::getInitialX(const Arc* left, const Arc* right, bool movingRight) const
 {
     return movingRight ? left->site->point.x : right->site->point.x;
 }
@@ -162,13 +162,13 @@ void FortuneAlgorithm::setPrevHalfEdge(VoronoiDiagram::HalfEdge* prev, VoronoiDi
 
 void FortuneAlgorithm::addEvent(Arc* left, Arc* middle, Arc* right)
 {
-    float y;
-    Vector2f convergencePoint = computeConvergencePoint(left->site->point, middle->site->point, right->site->point, y);
+    double y;
+    Vector2 convergencePoint = computeConvergencePoint(left->site->point, middle->site->point, right->site->point, y);
     bool isBelow = ((mBeachlineY - y) / std::abs(mBeachlineY)) > 1e-6;
     bool leftBreakpointMovingRight = isMovingRight(left, middle);
     bool rightBreakpointMovingRight = isMovingRight(middle, right);
-    float leftInitialX = getInitialX(left, middle, leftBreakpointMovingRight);
-    float rightInitialX = getInitialX(middle, right, rightBreakpointMovingRight);
+    double leftInitialX = getInitialX(left, middle, leftBreakpointMovingRight);
+    double rightInitialX = getInitialX(middle, right, rightBreakpointMovingRight);
     bool isValid =
         ((leftBreakpointMovingRight && leftInitialX < convergencePoint.x) ||
         (!leftBreakpointMovingRight && leftInitialX > convergencePoint.x)) &&
@@ -191,14 +191,14 @@ void FortuneAlgorithm::deleteEvent(Arc* arc)
     }
 }
 
-Vector2f FortuneAlgorithm::computeConvergencePoint(Vector2f point1, Vector2f point2, Vector2f point3, float& y) const
+Vector2 FortuneAlgorithm::computeConvergencePoint(Vector2 point1, Vector2 point2, Vector2 point3, double& y) const
 {
-    Vector2f v1 = (point1 - point2).getOrthogonal();
-    Vector2f v2 = (point2 - point3).getOrthogonal();
-    Vector2f delta = 0.5f * (point3 - point1);
-    float t = delta.getDet(v2) / v1.getDet(v2);
-    Vector2f center = 0.5f * (point1 + point2) + t * v1;
-    float r = center.getDistance(point1);
+    Vector2 v1 = (point1 - point2).getOrthogonal();
+    Vector2 v2 = (point2 - point3).getOrthogonal();
+    Vector2 delta = 0.5f * (point3 - point1);
+    double t = delta.getDet(v2) / v1.getDet(v2);
+    Vector2 center = 0.5f * (point1 + point2) + t * v1;
+    double r = center.getDistance(point1);
     y = center.y - r;
     return center;
 }
@@ -221,10 +221,10 @@ void FortuneAlgorithm::bound(Box box)
         while (!mBeachline.isNil(rightArc))
         {
             // Bound the edge
-            Vector2f direction = (leftArc->site->point - rightArc->site->point).getOrthogonal();
-            Vector2f origin = (leftArc->site->point + rightArc->site->point) * 0.5f;
+            Vector2 direction = (leftArc->site->point - rightArc->site->point).getOrthogonal();
+            Vector2 origin = (leftArc->site->point + rightArc->site->point) * 0.5f;
             // Line-box intersection
-            Vector2f intersection;
+            Vector2 intersection;
             Side side = getBoxIntersection(box, origin, direction, intersection);
             // Create a new vertex and ends the half edges
             VoronoiDiagram::Vertex* vertex = mDiagram.createVertex(intersection);
@@ -304,10 +304,10 @@ void FortuneAlgorithm::bound(Box box)
     }
 }
 
-FortuneAlgorithm::Side FortuneAlgorithm::getBoxIntersection(Box box, Vector2f origin, Vector2f direction, Vector2f& intersection) const
+FortuneAlgorithm::Side FortuneAlgorithm::getBoxIntersection(Box box, Vector2 origin, Vector2 direction, Vector2& intersection) const
 {
     Side side;
-    float t;
+    double t;
     if (direction.x > 0)
     {
         t = (box.right - origin.x) / direction.x;
@@ -322,7 +322,7 @@ FortuneAlgorithm::Side FortuneAlgorithm::getBoxIntersection(Box box, Vector2f or
     }
     if (direction.y > 0)
     {
-        float newT = (box.top - origin.y) / direction.y;
+        double newT = (box.top - origin.y) / direction.y;
         if (newT < t)
         {
             side = Side::TOP;
@@ -331,7 +331,7 @@ FortuneAlgorithm::Side FortuneAlgorithm::getBoxIntersection(Box box, Vector2f or
     }
     else
     {
-        float newT = (box.bottom - origin.y) / direction.y;
+        double newT = (box.bottom - origin.y) / direction.y;
         if (newT < t)
         {
             side = Side::BOTTOM;
@@ -346,13 +346,13 @@ VoronoiDiagram::Vertex* FortuneAlgorithm::createCorner(Box box, Side side)
     switch (side)
     {
         case Side::LEFT:
-            return mDiagram.createVertex(Vector2f(box.left, box.top));
+            return mDiagram.createVertex(Vector2(box.left, box.top));
         case Side::BOTTOM:
-            return mDiagram.createVertex(Vector2f(box.left, box.bottom));
+            return mDiagram.createVertex(Vector2(box.left, box.bottom));
         case Side::RIGHT:
-            return mDiagram.createVertex(Vector2f(box.right, box.bottom));
+            return mDiagram.createVertex(Vector2(box.right, box.bottom));
         case Side::TOP:
-            return mDiagram.createVertex(Vector2f(box.right, box.top));
+            return mDiagram.createVertex(Vector2(box.right, box.top));
         default:
             return nullptr;
     }

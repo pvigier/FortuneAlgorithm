@@ -5,7 +5,7 @@ Event::Event(VoronoiDiagram::Site* site) : type(Type::SITE), y(site->point.y), i
 
 }
 
-Event::Event(float y, Vector2f point, Arc* arc) : type(Type::CIRCLE), y(y), index(-1), point(point), arc(arc)
+Event::Event(double y, Vector2 point, Arc* arc) : type(Type::CIRCLE), y(y), index(-1), point(point), arc(arc)
 {
 
 

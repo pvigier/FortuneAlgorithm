@@ -1,32 +1,32 @@
 #include "Vector2.h"
 
-Vector2f::Vector2f(float x, float y) : x(x), y(y)
+Vector2::Vector2(double x, double y) : x(x), y(y)
 {
 
 }
 
 // Unary operators
 
-Vector2f Vector2f::operator-() const
+Vector2 Vector2::operator-() const
 {
-    return Vector2f(-x, -y);
+    return Vector2(-x, -y);
 }
 
-Vector2f& Vector2f::operator+=(const Vector2f& other)
+Vector2& Vector2::operator+=(const Vector2& other)
 {
     x += other.x;
     y += other.y;
     return *this;
 }
 
-Vector2f& Vector2f::operator-=(const Vector2f& other)
+Vector2& Vector2::operator-=(const Vector2& other)
 {
     x -= other.x;
     y -= other.y;
     return *this;
 }
 
-Vector2f& Vector2f::operator*=(float t)  
+Vector2& Vector2::operator*=(double t)  
 {
     x *= t;
     y *= t;
@@ -35,55 +35,55 @@ Vector2f& Vector2f::operator*=(float t)
 
 // Other operations
 
-Vector2f Vector2f::getOrthogonal() const
+Vector2 Vector2::getOrthogonal() const
 {
-    return Vector2f(-y, x);
+    return Vector2(-y, x);
 }
 
-float Vector2f::dot(const Vector2f& other) const
+double Vector2::dot(const Vector2& other) const
 {
     return x * other.x + y * other.y;
 }
 
-float Vector2f::getNorm() const
+double Vector2::getNorm() const
 {
     return std::sqrt(x * x + y * y);
 }
 
-float Vector2f::getDistance(const Vector2f& other) const
+double Vector2::getDistance(const Vector2& other) const
 {
     return (*this - other).getNorm();
 }
 
-float Vector2f::getDet(const Vector2f& other) const
+double Vector2::getDet(const Vector2& other) const
 {
     return x * other.y - y * other.x;
 }
 
-Vector2f operator+(Vector2f lhs, const Vector2f& rhs)
+Vector2 operator+(Vector2 lhs, const Vector2& rhs)
 {
     lhs += rhs;
     return lhs;
 }
 
-Vector2f operator-(Vector2f lhs, const Vector2f& rhs) 
+Vector2 operator-(Vector2 lhs, const Vector2& rhs) 
 {
     lhs -= rhs;
     return lhs;
 }
 
-Vector2f operator*(float t, Vector2f vec)
+Vector2 operator*(double t, Vector2 vec)
 {
     vec *= t;
     return vec;
 }
 
-Vector2f operator*(Vector2f vec, float t)
+Vector2 operator*(Vector2 vec, double t)
 {
     return t * vec;
 }
 
-std::ostream& operator<<(std::ostream& os, const Vector2f& vec)
+std::ostream& operator<<(std::ostream& os, const Vector2& vec)
 {
     os << "(" << vec.x << ", " << vec.y << ")";
     return os;

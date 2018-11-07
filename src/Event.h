@@ -14,15 +14,15 @@ public:
     // Site event
     Event(VoronoiDiagram::Site* site);
     // Circle event
-    Event(float y, Vector2f point, Arc* arc);
+    Event(double y, Vector2 point, Arc* arc);
 
     const Type type;
-    float y;
+    double y;
     int index;
     // Site event
     VoronoiDiagram::Site* site;
     // Circle event
-    Vector2f point;
+    Vector2 point;
     Arc* arc;
 
 };

@@ -42,14 +42,14 @@ Arc* Beachline::getLeftmostArc() const
     return x;
 }
 
-Arc* Beachline::locateArcAbove(Vector2f point, float l) const
+Arc* Beachline::locateArcAbove(Vector2 point, double l) const
 {
     Arc* node = mRoot;
     bool found = false;
     while (!found)
     {
-        float breakpointLeft = -std::numeric_limits<float>::infinity();
-        float breakpointRight = std::numeric_limits<float>::infinity();
+        double breakpointLeft = -std::numeric_limits<double>::infinity();
+        double breakpointRight = std::numeric_limits<double>::infinity();
         if (!isNil(node->prev))
            breakpointLeft =  computeBreakpoint(node->prev->site->point, node->site->point, l);
         if (!isNil(node->next))
@@ -347,15 +347,15 @@ void Beachline::rightRotate(Arc* y)
     y->parent = x;
 }
 
-float Beachline::computeBreakpoint(Vector2f point1, Vector2f point2, float l) const
+double Beachline::computeBreakpoint(Vector2 point1, Vector2 point2, double l) const
 {
-    float x1 = point1.x, y1 = point1.y, x2 = point2.x, y2 = point2.y;
-    float d1 = 1 / (2 * (y1 - l));
-	float d2 = 1 / (2 * (y2 - l));
-	float a = d1 - d2;
-	float b = 2 * (x2 * d2 - x1 * d1);
-	float c = (y1 * y1 + x1 * x1 - l * l) * d1 - (y2 * y2 + x2 * x2 - l * l) * d2;
-	float delta = b * b - 4 * a * c;
+    double x1 = point1.x, y1 = point1.y, x2 = point2.x, y2 = point2.y;
+    double d1 = 1 / (2 * (y1 - l));
+	double d2 = 1 / (2 * (y2 - l));
+	double a = d1 - d2;
+	double b = 2 * (x2 * d2 - x1 * d1);
+	double c = (y1 * y1 + x1 * x1 - l * l) * d1 - (y2 * y2 + x2 * x2 - l * l) * d2;
+	double delta = b * b - 4 * a * c;
     return (-b + std::sqrt(delta)) / (2 * a);
 }
 

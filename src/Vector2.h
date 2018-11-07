@@ -5,40 +5,40 @@
 
 // Declarations
 
-class Vector2f;
-Vector2f operator-(Vector2f lhs, const Vector2f& rhs);
+class Vector2;
+Vector2 operator-(Vector2 lhs, const Vector2& rhs);
 
 // Implementations
 
-class Vector2f
+class Vector2
 {
 public:
-    float x;
-    float y;
+    double x;
+    double y;
 
-    Vector2f(float x = 0.0f, float y = 0.0f);
+    Vector2(double x = 0.0f, double y = 0.0f);
     
     // Unary operators
 
-    Vector2f operator-() const;
-    Vector2f& operator+=(const Vector2f& other);
-    Vector2f& operator-=(const Vector2f& other);
-    Vector2f& operator*=(float t);
+    Vector2 operator-() const;
+    Vector2& operator+=(const Vector2& other);
+    Vector2& operator-=(const Vector2& other);
+    Vector2& operator*=(double t);
     
     // Other operations
     
-    Vector2f getOrthogonal() const;
-    float dot(const Vector2f& other) const;
-    float getNorm() const;
-    float getDistance(const Vector2f& other) const;
-    float getDet(const Vector2f& other) const;
+    Vector2 getOrthogonal() const;
+    double dot(const Vector2& other) const;
+    double getNorm() const;
+    double getDistance(const Vector2& other) const;
+    double getDet(const Vector2& other) const;
 };
 
 // Binary operators
 
-Vector2f operator+(Vector2f lhs, const Vector2f& rhs);
-Vector2f operator-(Vector2f lhs, const Vector2f& rhs);
-Vector2f operator*(float t, Vector2f vec);
-Vector2f operator*(Vector2f vec, float t);
-std::ostream& operator<<(std::ostream& os, const Vector2f& vec);
+Vector2 operator+(Vector2 lhs, const Vector2& rhs);
+Vector2 operator-(Vector2 lhs, const Vector2& rhs);
+Vector2 operator*(double t, Vector2 vec);
+Vector2 operator*(Vector2 vec, double t);
+std::ostream& operator<<(std::ostream& os, const Vector2& vec);
 

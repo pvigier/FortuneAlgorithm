@@ -24,7 +24,7 @@ public:
     void setRoot(Arc* x);
     Arc* getLeftmostArc() const;
 
-    Arc* locateArcAbove(Vector2f point, float l) const;
+    Arc* locateArcAbove(Vector2 point, double l) const;
     void insertBefore(Arc* x, Arc* y);
     void insertAfter(Arc* x, Arc* y);
     void replace(Arc* x, Arc* y);
@@ -48,7 +48,7 @@ private:
     void leftRotate(Arc* x);
     void rightRotate(Arc* y);
 
-    float computeBreakpoint(Vector2f point1, Vector2f point2, float l) const;
+    double computeBreakpoint(Vector2 point1, Vector2 point2, double l) const;
 
     void free(Arc* x);
 

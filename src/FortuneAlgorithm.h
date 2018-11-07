@@ -18,13 +18,13 @@ public:
     // Be careful, y-axis is oriented to the top like in math
     struct Box
     {
-        float left;
-        float bottom;
-        float right;
-        float top;
+        double left;
+        double bottom;
+        double right;
+        double top;
     };
 
-    FortuneAlgorithm(std::vector<Vector2f> points);
+    FortuneAlgorithm(std::vector<Vector2> points);
     ~FortuneAlgorithm();
 
     void construct();
@@ -36,7 +36,7 @@ private:
     VoronoiDiagram mDiagram;
     Beachline mBeachline;
     PriorityQueue<Event> mEvents;
-    float mBeachlineY;
+    double mBeachlineY;
 
     // Algorithm
     void handleSiteEvent(Event* event);
@@ -48,7 +48,7 @@ private:
 
     // Breakpoint
     bool isMovingRight(const Arc* left, const Arc* right) const;
-    float getInitialX(const Arc* left, const Arc* right, bool movingRight) const;
+    double getInitialX(const Arc* left, const Arc* right, bool movingRight) const;
 
     // Edges
     void addEdge(Arc* left, Arc* right);
@@ -59,7 +59,7 @@ private:
     // Events
     void addEvent(Arc* left, Arc* middle, Arc* right);
     void deleteEvent(Arc* arc);
-    Vector2f computeConvergencePoint(Vector2f point1, Vector2f point2, Vector2f point3, float& y) const;
+    Vector2 computeConvergencePoint(Vector2 point1, Vector2 point2, Vector2 point3, double& y) const;
 
     // Bounding
     enum class Side : int {LEFT, BOTTOM, RIGHT, TOP};
@@ -71,7 +71,7 @@ private:
         VoronoiDiagram::HalfEdge* nextHalfEdge;
     };
 
-    Side getBoxIntersection(Box box, Vector2f origin, Vector2f direction, Vector2f& intersection) const; 
+    Side getBoxIntersection(Box box, Vector2 origin, Vector2 direction, Vector2& intersection) const; 
     VoronoiDiagram::Vertex* createCorner(Box box, Side side);
 };
 

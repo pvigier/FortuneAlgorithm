@@ -1,6 +1,6 @@
 #include "VoronoiDiagram.h"
 
-VoronoiDiagram::VoronoiDiagram(const std::vector<Vector2f>& points)
+VoronoiDiagram::VoronoiDiagram(const std::vector<Vector2>& points)
 {
     mSites.reserve(points.size());
     mFaces.reserve(points.size());
@@ -37,7 +37,7 @@ const std::list<VoronoiDiagram::HalfEdge>& VoronoiDiagram::getHalfEdges() const
     return mHalfEdges;
 }
 
-VoronoiDiagram::Vertex* VoronoiDiagram::createVertex(Vector2f point)
+VoronoiDiagram::Vertex* VoronoiDiagram::createVertex(Vector2 point)
 {
     mVertices.push_back(VoronoiDiagram::Vertex{point/*, nullptr*/});
     return &mVertices.back();
