@@ -357,13 +357,13 @@ void Beachline::rightRotate(Arc* y)
 double Beachline::computeBreakpoint(Vector2 point1, Vector2 point2, double l) const
 {
     double x1 = point1.x, y1 = point1.y, x2 = point2.x, y2 = point2.y;
-    double d1 = 1 / (2 * (y1 - l));
-	double d2 = 1 / (2 * (y2 - l));
+    double d1 = 1.0 / (2.0 * (y1 - l));
+	double d2 = 1.0 / (2.0 * (y2 - l));
 	double a = d1 - d2;
-	double b = 2 * (x2 * d2 - x1 * d1);
+	double b = 2.0 * (x2 * d2 - x1 * d1);
 	double c = (y1 * y1 + x1 * x1 - l * l) * d1 - (y2 * y2 + x2 * x2 - l * l) * d2;
-	double delta = b * b - 4 * a * c;
-    return (-b + std::sqrt(delta)) / (2 * a);
+	double delta = b * b - 4.0 * a * c;
+    return (-b + std::sqrt(delta)) / (2.0 * a);
 }
 
 void Beachline::free(Arc* x)

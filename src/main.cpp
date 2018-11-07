@@ -69,8 +69,8 @@ void drawDiagram(sf::RenderWindow& window, VoronoiDiagram& diagram, int nbSites)
         {
             if (halfEdge->origin != nullptr && halfEdge->destination != nullptr)
             {
-                Vector2 origin = (halfEdge->origin->point - center) * 0.9f + center;
-                Vector2 destination = (halfEdge->destination->point - center) * 0.9f + center;
+                Vector2 origin = (halfEdge->origin->point - center) * 0.9 + center;
+                Vector2 destination = (halfEdge->destination->point - center) * 0.9 + center;
                 drawEdge(window, origin, destination, sf::Color::Red);
             }
             halfEdge = halfEdge->next;

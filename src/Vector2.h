@@ -16,7 +16,7 @@ public:
     double x;
     double y;
 
-    Vector2(double x = 0.0f, double y = 0.0f);
+    Vector2(double x = 0.0, double y = 0.0);
     
     // Unary operators
 

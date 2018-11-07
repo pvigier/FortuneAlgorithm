@@ -195,9 +195,9 @@ Vector2 FortuneAlgorithm::computeConvergencePoint(Vector2 point1, Vector2 point2
 {
     Vector2 v1 = (point1 - point2).getOrthogonal();
     Vector2 v2 = (point2 - point3).getOrthogonal();
-    Vector2 delta = 0.5f * (point3 - point1);
+    Vector2 delta = 0.5 * (point3 - point1);
     double t = delta.getDet(v2) / v1.getDet(v2);
-    Vector2 center = 0.5f * (point1 + point2) + t * v1;
+    Vector2 center = 0.5 * (point1 + point2) + t * v1;
     double r = center.getDistance(point1);
     y = center.y - r;
     return center;
@@ -308,7 +308,7 @@ FortuneAlgorithm::Side FortuneAlgorithm::getBoxIntersection(Box box, Vector2 ori
 {
     Side side;
     double t;
-    if (direction.x > 0)
+    if (direction.x > 0.0)
     {
         t = (box.right - origin.x) / direction.x;
         side = Side::RIGHT;
@@ -320,7 +320,7 @@ FortuneAlgorithm::Side FortuneAlgorithm::getBoxIntersection(Box box, Vector2 ori
         side = Side::LEFT;
         intersection = origin + t * direction;
     }
-    if (direction.y > 0)
+    if (direction.y > 0.0)
     {
         double newT = (box.top - origin.y) / direction.y;
         if (newT < t)
