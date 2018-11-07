@@ -8,13 +8,14 @@
 // My includes
 #include "FortuneAlgorithm.h"
 
-constexpr double WINDOW_WIDTH = 600.0f;
-constexpr double WINDOW_HEIGHT = 600.0f;
-constexpr double POINT_RADIUS = 0.005f;
+constexpr float WINDOW_WIDTH = 600.0f;
+constexpr float WINDOW_HEIGHT = 600.0f;
+constexpr float POINT_RADIUS = 0.005f;
 
 std::vector<Vector2> generatePoints(int nbPoints)
 {
     uint64_t seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::cout << seed << std::endl;
     std::default_random_engine generator(seed);
     std::uniform_real_distribution<double> distribution (0.0, 1.0);
 
@@ -82,20 +83,26 @@ void drawDiagram(sf::RenderWindow& window, VoronoiDiagram& diagram, int nbSites)
 int main()
 {
     std::vector<Vector2> points = generatePoints(100);
+    /*std::cout << "Points" << std::endl;
     for (const auto& point : points)
-        std::cout << point << std::endl;
+        std::cout << point << std::endl;*/
     FortuneAlgorithm algorithm(points);
     algorithm.construct();
+    FortuneAlgorithm::Box box = {-10000.0, -10000.0, 10000.0, 10000.0};
+    algorithm.bound(box);
     VoronoiDiagram diagram = algorithm.getDiagram();
 
     // Print vertices
+    /*std::cout << "Vertices" << std::endl;
     const std::list<VoronoiDiagram::Vertex>& vertices = diagram.getVertices();
     for (const VoronoiDiagram::Vertex& vertex : vertices)
-        std::cout << vertex.point << std::endl;
+        std::cout << vertex.point << std::endl;*/
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Voronoi", sf::Style::Default, settings);
+    //window.setView(sf::View(sf::FloatRect(box.left, box.bottom, box.right - box.left, box.top - box.bottom)));
+    window.setView(sf::View(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f)));
 
     while (window.isOpen())
     {
