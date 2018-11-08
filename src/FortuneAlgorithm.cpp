@@ -210,7 +210,7 @@ Vector2 FortuneAlgorithm::computeConvergencePoint(Vector2 point1, Vector2 point2
 #include <list>
 #include <unordered_map>
 
-void FortuneAlgorithm::bound(Box box)
+bool FortuneAlgorithm::bound(Box box)
 {
     // Retrieve all non bounded half edges from the beach line
     std::list<LinkedVertex> linkedVertices;
@@ -284,6 +284,7 @@ void FortuneAlgorithm::bound(Box box)
         }
     }
     // Join the half edges
+    bool error = false;
     for (auto& kv : vertices)
     {
         std::size_t i = kv.first;
@@ -305,8 +306,11 @@ void FortuneAlgorithm::bound(Box box)
                 if (cellVertices[side][1]->nextHalfEdge != nullptr)
                     cellVertices[side][1]->nextHalfEdge->prev = halfEdge;
             }
+            else if (cellVertices[side].size() > 0)
+                error = true;
         }
     }
+    return !error;
 }
 
 FortuneAlgorithm::Side FortuneAlgorithm::getBoxIntersection(Box box, Vector2 origin, Vector2 direction, Vector2& intersection) const

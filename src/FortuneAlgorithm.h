@@ -28,7 +28,7 @@ public:
     ~FortuneAlgorithm();
 
     void construct();
-    void bound(Box box);
+    bool bound(Box box);
 
     VoronoiDiagram getDiagram();
 
