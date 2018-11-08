@@ -243,14 +243,14 @@ void FortuneAlgorithm::bound(Box box)
     // Sort the vertices in trigonometric order for each side of each cell
     for (auto& kv : vertices)
     {
-        std::size_t i = kv.first;
-        std::sort(vertices[i][0].begin(), vertices[i][0].end(), 
+        auto& cellVertices = kv.second;
+        std::sort(cellVertices[0].begin(), cellVertices[0].end(), 
             [](const auto& lhs, const auto& rhs){ return lhs->vertex->point.y > rhs->vertex->point.y; });
-        std::sort(vertices[i][1].begin(), vertices[i][1].end(), 
+        std::sort(cellVertices[1].begin(), cellVertices[1].end(), 
             [](const auto& lhs, const auto& rhs){ return lhs->vertex->point.x < rhs->vertex->point.x; });
-        std::sort(vertices[i][2].begin(), vertices[i][2].end(), 
+        std::sort(cellVertices[2].begin(), cellVertices[2].end(), 
             [](const auto& lhs, const auto& rhs){ return lhs->vertex->point.y < rhs->vertex->point.y; });
-        std::sort(vertices[i][3].begin(), vertices[i][3].end(), 
+        std::sort(cellVertices[3].begin(), cellVertices[3].end(), 
             [](const auto& lhs, const auto& rhs){ return lhs->vertex->point.x > rhs->vertex->point.x; });
     }
     // Add corners
@@ -258,28 +258,28 @@ void FortuneAlgorithm::bound(Box box)
     corners.fill(nullptr);
     for (auto& kv : vertices)
     {
-        std::size_t i = kv.first;
+        auto& cellVertices = kv.second;
         for (std::size_t side = 0; side < 4; ++side)
         {
-            if (vertices[i][side].empty())
+            if (cellVertices[side].empty())
                 continue;
             // First point is a destination
-            if (vertices[i][side].front()->prevHalfEdge == nullptr && corners[side] == nullptr)
+            if (cellVertices[side].front()->prevHalfEdge == nullptr && corners[side] == nullptr)
             {
                 std::size_t prevSide = (side + 3) % 4;
                 corners[side] = createCorner(box, static_cast<Side>(side));
                 linkedVertices.emplace_back(LinkedVertex{nullptr, corners[side], nullptr});
-                vertices[i][prevSide].push_back(&linkedVertices.back());
-                vertices[i][side].push_front(&linkedVertices.back());
+                cellVertices[prevSide].push_back(&linkedVertices.back());
+                cellVertices[side].push_front(&linkedVertices.back());
             }
             // Last point is an origin
             std::size_t nextSide = (side + 1) % 4;
-            if (vertices[i][side].back()->nextHalfEdge == nullptr && corners[nextSide] == nullptr)
+            if (cellVertices[side].back()->nextHalfEdge == nullptr && corners[nextSide] == nullptr)
             {
                 corners[nextSide] = createCorner(box, static_cast<Side>(nextSide));
                 linkedVertices.emplace_back(LinkedVertex{nullptr, corners[nextSide], nullptr});
-                vertices[i][side].push_back(&linkedVertices.back());
-                vertices[i][nextSide].push_front(&linkedVertices.back());
+                cellVertices[side].push_back(&linkedVertices.back());
+                cellVertices[nextSide].push_front(&linkedVertices.back());
             }
         }
     }
@@ -287,22 +287,23 @@ void FortuneAlgorithm::bound(Box box)
     for (auto& kv : vertices)
     {
         std::size_t i = kv.first;
+        auto& cellVertices = kv.second;
         for (std::size_t side = 0; side < 4; ++side)
         {
-            if (vertices[i][side].size() == 2)
+            if (cellVertices[side].size() == 2)
             {
                 // Link vertices 
                 VoronoiDiagram::HalfEdge* halfEdge = mDiagram.createHalfEdge(mDiagram.getFace(i));
-                halfEdge->origin = vertices[i][side][0]->vertex;
-                halfEdge->destination = vertices[i][side][1]->vertex;
-                vertices[i][side][0]->nextHalfEdge = halfEdge;
-                halfEdge->prev = vertices[i][side][0]->prevHalfEdge;
-                if (vertices[i][side][0]->prevHalfEdge != nullptr)
-                    vertices[i][side][0]->prevHalfEdge->next = halfEdge;
-                vertices[i][side][1]->prevHalfEdge = halfEdge;
-                halfEdge->next = vertices[i][side][1]->nextHalfEdge;
-                if (vertices[i][side][1]->nextHalfEdge != nullptr)
-                    vertices[i][side][1]->nextHalfEdge->prev = halfEdge;
+                halfEdge->origin = cellVertices[side][0]->vertex;
+                halfEdge->destination = cellVertices[side][1]->vertex;
+                cellVertices[side][0]->nextHalfEdge = halfEdge;
+                halfEdge->prev = cellVertices[side][0]->prevHalfEdge;
+                if (cellVertices[side][0]->prevHalfEdge != nullptr)
+                    cellVertices[side][0]->prevHalfEdge->next = halfEdge;
+                cellVertices[side][1]->prevHalfEdge = halfEdge;
+                halfEdge->next = cellVertices[side][1]->nextHalfEdge;
+                if (cellVertices[side][1]->nextHalfEdge != nullptr)
+                    cellVertices[side][1]->nextHalfEdge->prev = halfEdge;
             }
         }
     }
