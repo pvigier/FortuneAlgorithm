@@ -208,12 +208,13 @@ Vector2 FortuneAlgorithm::computeConvergencePoint(Vector2 point1, Vector2 point2
 #include <algorithm>
 #include <deque>
 #include <list>
+#include <unordered_map>
 
 void FortuneAlgorithm::bound(Box box)
 {
     // Retrieve all non bounded half edges from the beach line
     std::list<LinkedVertex> linkedVertices;
-    std::vector<std::array<std::deque<LinkedVertex*>, 4>> vertices(mDiagram.getNbSites());
+    std::unordered_map<std::size_t, std::array<std::deque<LinkedVertex*>, 4>> vertices(mDiagram.getNbSites());
     if (!mBeachline.isEmpty())
     {
         Arc* leftArc = mBeachline.getLeftmostArc();
@@ -240,8 +241,9 @@ void FortuneAlgorithm::bound(Box box)
         }
     }
     // Sort the vertices in trigonometric order for each side of each cell
-    for (std::size_t i = 0; i < mDiagram.getNbSites(); ++i)
+    for (auto& kv : vertices)
     {
+        std::size_t i = kv.first;
         std::sort(vertices[i][0].begin(), vertices[i][0].end(), 
             [](const auto& lhs, const auto& rhs){ return lhs->vertex->point.y > rhs->vertex->point.y; });
         std::sort(vertices[i][1].begin(), vertices[i][1].end(), 
@@ -254,8 +256,9 @@ void FortuneAlgorithm::bound(Box box)
     // Add corners
     std::array<VoronoiDiagram::Vertex*, 4> corners;
     corners.fill(nullptr);
-    for (std::size_t i = 0; i < mDiagram.getNbSites(); ++i)
+    for (auto& kv : vertices)
     {
+        std::size_t i = kv.first;
         for (std::size_t side = 0; side < 4; ++side)
         {
             if (vertices[i][side].empty())
@@ -281,8 +284,9 @@ void FortuneAlgorithm::bound(Box box)
         }
     }
     // Join the half edges
-    for (std::size_t i = 0; i < mDiagram.getNbSites(); ++i)
+    for (auto& kv : vertices)
     {
+        std::size_t i = kv.first;
         for (std::size_t side = 0; side < 4; ++side)
         {
             if (vertices[i][side].size() == 2)
