@@ -51,3 +51,16 @@ VoronoiDiagram::HalfEdge* VoronoiDiagram::createHalfEdge(Face* face)
     return mHalfEdges.back().get();
 }
 
+void VoronoiDiagram::removeVertex(Vertex* vertex)
+{
+    std::swap(mVertices[vertex->index], mVertices.back());
+    mVertices[vertex->index]->index = vertex->index;
+    mVertices.pop_back();
+}
+
+void VoronoiDiagram::removeHalfEdge(HalfEdge* edge)
+{
+    std::swap(mHalfEdges[edge->index], mHalfEdges.back());
+    mHalfEdges[edge->index]->index = edge->index;
+    mHalfEdges.pop_back();
+}

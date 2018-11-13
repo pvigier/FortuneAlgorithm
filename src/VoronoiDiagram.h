@@ -72,4 +72,8 @@ private:
 
     Vertex* createVertex(Vector2 point);
     HalfEdge* createHalfEdge(Face* face);
+
+    // Diagram intersection
+    void removeVertex(Vertex* vertex);
+    void removeHalfEdge(HalfEdge* edge);
 };
