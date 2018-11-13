@@ -2,7 +2,7 @@
 
 // STL
 #include <vector>
-#include <list>
+#include <memory>
 // My includes
 #include "Vector2.h"
 
@@ -23,12 +23,14 @@ public:
 
     struct Vertex
     {
+        std::size_t index;
         Vector2 point;
         //HalfEdge* incidentEdge;
     };
 
     struct HalfEdge
     {
+        std::size_t index;
         Vertex* origin;
         Vertex* destination;
         HalfEdge* twin;
@@ -56,14 +58,14 @@ public:
     Site* getSite(std::size_t i);
     std::size_t getNbSites() const;
     Face* getFace(std::size_t i);
-    const std::list<Vertex>& getVertices() const;
-    const std::list<HalfEdge>& getHalfEdges() const;
+    const std::vector<std::unique_ptr<Vertex>>& getVertices() const;
+    const std::vector<std::unique_ptr<HalfEdge>>& getHalfEdges() const;
 
 private:
     std::vector<Site> mSites;
     std::vector<Face> mFaces;
-    std::list<Vertex> mVertices;
-    std::list<HalfEdge> mHalfEdges;
+    std::vector<std::unique_ptr<Vertex>> mVertices;
+    std::vector<std::unique_ptr<HalfEdge>> mHalfEdges;
 
     // Diagram construction
     friend FortuneAlgorithm;

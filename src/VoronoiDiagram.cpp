@@ -27,27 +27,27 @@ VoronoiDiagram::Face* VoronoiDiagram::getFace(std::size_t i)
     return &mFaces[i];
 }
 
-const std::list<VoronoiDiagram::Vertex>& VoronoiDiagram::getVertices() const
+const std::vector<std::unique_ptr<VoronoiDiagram::Vertex>>& VoronoiDiagram::getVertices() const
 {
     return mVertices;
 }
 
-const std::list<VoronoiDiagram::HalfEdge>& VoronoiDiagram::getHalfEdges() const
+const std::vector<std::unique_ptr<VoronoiDiagram::HalfEdge>>& VoronoiDiagram::getHalfEdges() const
 {
     return mHalfEdges;
 }
 
 VoronoiDiagram::Vertex* VoronoiDiagram::createVertex(Vector2 point)
 {
-    mVertices.push_back(VoronoiDiagram::Vertex{point/*, nullptr*/});
-    return &mVertices.back();
+    mVertices.push_back(std::make_unique<Vertex>(Vertex{mVertices.size(), point/*, nullptr*/}));
+    return mVertices.back().get();
 }
 
 VoronoiDiagram::HalfEdge* VoronoiDiagram::createHalfEdge(Face* face)
 {
-    mHalfEdges.push_back(VoronoiDiagram::HalfEdge{nullptr, nullptr, nullptr, face, nullptr, nullptr});
+    mHalfEdges.push_back(std::make_unique<HalfEdge>(HalfEdge{mHalfEdges.size(), nullptr, nullptr, nullptr, face, nullptr, nullptr}));
     if(face->outerComponent == nullptr)
-        face->outerComponent = &mHalfEdges.back();
-    return &mHalfEdges.back();
+        face->outerComponent = mHalfEdges.back().get();
+    return mHalfEdges.back().get();
 }
 
