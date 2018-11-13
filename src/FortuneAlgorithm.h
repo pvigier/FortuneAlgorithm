@@ -1,10 +1,8 @@
 #pragma once
 
 // STL
-#include <iostream>
 #include <vector>
 // My includes
-#include "Vector2.h"
 #include "PriorityQueue.h"
 #include "VoronoiDiagram.h"
 #include "Beachline.h"
@@ -15,15 +13,7 @@ class Event;
 class FortuneAlgorithm
 {
 public:
-    // Be careful, y-axis is oriented to the top like in math
-    struct Box
-    {
-        double left;
-        double bottom;
-        double right;
-        double top;
-    };
-
+    
     FortuneAlgorithm(std::vector<Vector2> points);
     ~FortuneAlgorithm();
 

@@ -87,9 +87,15 @@ int main()
     for (const auto& point : points)
         std::cout << point << std::endl;*/
     FortuneAlgorithm algorithm(points);
+    auto start = std::chrono::system_clock::now();
     algorithm.construct();
-    FortuneAlgorithm::Box box = {-10000.0, -10000.0, 10000.0, 10000.0};
+    auto duration = std::chrono::system_clock::now() - start;
+    std::cout << "construction: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << std::endl;
+    Box box = {-10000.0, -10000.0, 10000.0, 10000.0};
+    start = std::chrono::system_clock::now();
     algorithm.bound(box);
+    duration = std::chrono::system_clock::now() - start;
+    std::cout << "bounding: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << std::endl;
     VoronoiDiagram diagram = algorithm.getDiagram();
 
     // Print vertices

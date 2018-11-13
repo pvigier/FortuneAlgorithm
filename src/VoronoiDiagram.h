@@ -5,6 +5,7 @@
 #include <memory>
 // My includes
 #include "Vector2.h"
+#include "Box.h"
 
 class FortuneAlgorithm;
 
