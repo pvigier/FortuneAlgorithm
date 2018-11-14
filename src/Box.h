@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include "Vector2.h"
 
 class Box
@@ -15,6 +16,6 @@ public:
 
     bool contains(Vector2 point) const;
     Side getFirstIntersection(Vector2 origin, Vector2 direction, Vector2& intersection) const; // Useful for Fortune's algorithm
-    int getIntersections(Vector2 origin, Vector2 destination, Vector2& intersection1, Vector2& intersection2) const; // Useful for diagram intersection
+    int getIntersections(Vector2 origin, Vector2 destination, std::array<Vector2, 2>& intersections) const; // Useful for diagram intersection
 };
 
