@@ -234,7 +234,7 @@ bool FortuneAlgorithm::bound(Box box)
             Vector2 origin = (leftArc->site->point + rightArc->site->point) * 0.5f;
             // Line-box intersection
             Vector2 intersection;
-            Side side = getBoxIntersection(box, origin, direction, intersection);
+            Box::Side side = box.getFirstIntersection(origin, direction, intersection);
             // Create a new vertex and ends the half edges
             VoronoiDiagram::Vertex* vertex = mDiagram.createVertex(intersection);
             setDestination(leftArc, rightArc, vertex);
@@ -275,7 +275,7 @@ bool FortuneAlgorithm::bound(Box box)
             if (cellVertices[side].front()->prevHalfEdge == nullptr && corners[side] == nullptr)
             {
                 std::size_t prevSide = (side + 3) % 4;
-                corners[side] = createCorner(box, static_cast<Side>(side));
+                corners[side] = createCorner(box, static_cast<Box::Side>(side));
                 linkedVertices.emplace_back(LinkedVertex{nullptr, corners[side], nullptr});
                 cellVertices[prevSide].push_back(&linkedVertices.back());
                 cellVertices[side].push_front(&linkedVertices.back());
@@ -284,7 +284,7 @@ bool FortuneAlgorithm::bound(Box box)
             std::size_t nextSide = (side + 1) % 4;
             if (cellVertices[side].back()->nextHalfEdge == nullptr && corners[nextSide] == nullptr)
             {
-                corners[nextSide] = createCorner(box, static_cast<Side>(nextSide));
+                corners[nextSide] = createCorner(box, static_cast<Box::Side>(nextSide));
                 linkedVertices.emplace_back(LinkedVertex{nullptr, corners[nextSide], nullptr});
                 cellVertices[side].push_back(&linkedVertices.back());
                 cellVertices[nextSide].push_front(&linkedVertices.back());
@@ -321,56 +321,20 @@ bool FortuneAlgorithm::bound(Box box)
     return !error;
 }
 
-FortuneAlgorithm::Side FortuneAlgorithm::getBoxIntersection(Box box, Vector2 origin, Vector2 direction, Vector2& intersection) const
-{
-    Side side;
-    double t;
-    if (direction.x > 0.0)
-    {
-        t = (box.right - origin.x) / direction.x;
-        side = Side::RIGHT;
-        intersection = origin + t * direction;
-    }
-    else
-    {
-        t = (box.left - origin.x) / direction.x;
-        side = Side::LEFT;
-        intersection = origin + t * direction;
-    }
-    if (direction.y > 0.0)
-    {
-        double newT = (box.top - origin.y) / direction.y;
-        if (newT < t)
-        {
-            side = Side::TOP;
-            intersection = origin + newT * direction;
-        }
-    }
-    else
-    {
-        double newT = (box.bottom - origin.y) / direction.y;
-        if (newT < t)
-        {
-            side = Side::BOTTOM;
-            intersection = origin + newT * direction;
-        }
-    }
-    return side;
-}
-
-VoronoiDiagram::Vertex* FortuneAlgorithm::createCorner(Box box, Side side)
+VoronoiDiagram::Vertex* FortuneAlgorithm::createCorner(Box box, Box::Side side)
 {
     switch (side)
     {
-        case Side::LEFT:
+        case Box::Side::LEFT:
             return mDiagram.createVertex(Vector2(box.left, box.top));
-        case Side::BOTTOM:
+        case Box::Side::BOTTOM:
             return mDiagram.createVertex(Vector2(box.left, box.bottom));
-        case Side::RIGHT:
+        case Box::Side::RIGHT:
             return mDiagram.createVertex(Vector2(box.right, box.bottom));
-        case Side::TOP:
+        case Box::Side::TOP:
             return mDiagram.createVertex(Vector2(box.right, box.top));
         default:
             return nullptr;
     }
 }
+

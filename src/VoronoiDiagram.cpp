@@ -64,3 +64,4 @@ void VoronoiDiagram::removeHalfEdge(HalfEdge* edge)
     mHalfEdges[edge->index]->index = edge->index;
     mHalfEdges.pop_back();
 }
+

@@ -52,7 +52,6 @@ private:
     Vector2 computeConvergencePoint(Vector2 point1, Vector2 point2, Vector2 point3, double& y) const;
 
     // Bounding
-    enum class Side : int {LEFT, BOTTOM, RIGHT, TOP};
 
     struct LinkedVertex
     {
@@ -61,7 +60,6 @@ private:
         VoronoiDiagram::HalfEdge* nextHalfEdge;
     };
 
-    Side getBoxIntersection(Box box, Vector2 origin, Vector2 direction, Vector2& intersection) const; 
-    VoronoiDiagram::Vertex* createCorner(Box box, Side side);
+    VoronoiDiagram::Vertex* createCorner(Box box, Box::Side side);
 };
 
