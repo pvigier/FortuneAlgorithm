@@ -233,16 +233,15 @@ bool FortuneAlgorithm::bound(Box box)
             Vector2 direction = (leftArc->site->point - rightArc->site->point).getOrthogonal();
             Vector2 origin = (leftArc->site->point + rightArc->site->point) * 0.5f;
             // Line-box intersection
-            Vector2 intersection;
-            Box::Side side = box.getFirstIntersection(origin, direction, intersection);
+            Box::Intersection intersection = box.getFirstIntersection(origin, direction);
             // Create a new vertex and ends the half edges
-            VoronoiDiagram::Vertex* vertex = mDiagram.createVertex(intersection);
+            VoronoiDiagram::Vertex* vertex = mDiagram.createVertex(intersection.point);
             setDestination(leftArc, rightArc, vertex);
             // Store the vertex on the boundaries
             linkedVertices.emplace_back(LinkedVertex{nullptr, vertex, leftArc->rightHalfEdge});
-            vertices[leftArc->site->index][static_cast<int>(side)].emplace_back(&linkedVertices.back());
+            vertices[leftArc->site->index][static_cast<int>(intersection.side)].emplace_back(&linkedVertices.back());
             linkedVertices.emplace_back(LinkedVertex{rightArc->leftHalfEdge, vertex, nullptr});
-            vertices[rightArc->site->index][static_cast<int>(side)].emplace_back(&linkedVertices.back());
+            vertices[rightArc->site->index][static_cast<int>(intersection.side)].emplace_back(&linkedVertices.back());
             // Next edge
             leftArc = rightArc;
             rightArc = rightArc->next;

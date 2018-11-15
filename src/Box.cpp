@@ -6,30 +6,30 @@ bool Box::contains(Vector2 point) const
         point.y >= bottom && point.y <= top;
 }
 
-Box::Side Box::getFirstIntersection(Vector2 origin, Vector2 direction, Vector2& intersection) const
+Box::Intersection Box::getFirstIntersection(Vector2 origin, Vector2 direction) const
 {
     // origin must be in the box
-    Side side;
+    Intersection intersection;
     double t;
     if (direction.x > 0.0)
     {
         t = (right - origin.x) / direction.x;
-        side = Side::RIGHT;
-        intersection = origin + t * direction;
+        intersection.side = Side::RIGHT;
+        intersection.point = origin + t * direction;
     }
     else
     {
         t = (left - origin.x) / direction.x;
-        side = Side::LEFT;
-        intersection = origin + t * direction;
+        intersection.side = Side::LEFT;
+        intersection.point = origin + t * direction;
     }
     if (direction.y > 0.0)
     {
         double newT = (top - origin.y) / direction.y;
         if (newT < t)
         {
-            side = Side::TOP;
-            intersection = origin + newT * direction;
+            intersection.side = Side::TOP;
+            intersection.point = origin + newT * direction;
         }
     }
     else
@@ -37,14 +37,14 @@ Box::Side Box::getFirstIntersection(Vector2 origin, Vector2 direction, Vector2& 
         double newT = (bottom - origin.y) / direction.y;
         if (newT < t)
         {
-            side = Side::BOTTOM;
-            intersection = origin + newT * direction;
+            intersection.side = Side::BOTTOM;
+            intersection.point = origin + newT * direction;
         }
     }
-    return side;
+    return intersection;
 }
 
-int Box::getIntersections(Vector2 origin, Vector2 destination, std::array<Vector2, 2>& intersections) const
+int Box::getIntersections(Vector2 origin, Vector2 destination, std::array<Intersection, 2>& intersections) const
 {
     // WARNING: If the intersection is a corner, both intersections are equals
     Vector2 direction = destination - origin;
@@ -54,32 +54,36 @@ int Box::getIntersections(Vector2 origin, Vector2 destination, std::array<Vector
     t[i] = (left - origin.x) / direction.x;
     if (t[i] >= 0.0 && t[i] <= 1.0)  
     {
-        intersections[i] = origin + t[i] * direction;
-        if (intersections[i].y >= bottom && intersections[i].y <= top)
+        intersections[i].side = Side::LEFT;
+        intersections[i].point = origin + t[i] * direction;
+        if (intersections[i].point.y >= bottom && intersections[i].point.y <= top)
             ++i;
     }
     // Right
     t[i] = (right - origin.x) / direction.x;
     if (t[i] >= 0.0 && t[i] <= 1.0)  
     {
-        intersections[i] = origin + t[i] * direction;
-        if (intersections[i].y >= bottom && intersections[i].y <= top)
+        intersections[i].side = Side::RIGHT;
+        intersections[i].point = origin + t[i] * direction;
+        if (intersections[i].point.y >= bottom && intersections[i].point.y <= top)
             ++i;
     }
     // Bottom
     t[i] = (bottom - origin.y) / direction.y;
     if (t[i] >= 0.0 && t[i] <= 1.0)  
     {
-        intersections[i] = origin + t[i] * direction;
-        if (intersections[i].x >= left && intersections[i].x <= right)
+        intersections[i].side = Side::BOTTOM;
+        intersections[i].point = origin + t[i] * direction;
+        if (intersections[i].point.x >= left && intersections[i].point.x <= right)
             ++i;
     }
     // Top
     t[i] = (top - origin.y) / direction.y;
     if (t[i] >= 0.0 && t[i] <= 1.0)  
     {
-        intersections[i] = origin + t[i] * direction;
-        if (intersections[i].x >= left && intersections[i].x <= right)
+        intersections[i].side = Side::TOP;
+        intersections[i].point = origin + t[i] * direction;
+        if (intersections[i].point.x >= left && intersections[i].point.x <= right)
             ++i;
     }
     // Sort the intersections from the nearest to the farthest
