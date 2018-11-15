@@ -274,7 +274,7 @@ bool FortuneAlgorithm::bound(Box box)
             if (cellVertices[side].front()->prevHalfEdge == nullptr && corners[side] == nullptr)
             {
                 std::size_t prevSide = (side + 3) % 4;
-                corners[side] = createCorner(box, static_cast<Box::Side>(side));
+                corners[side] = mDiagram.createCorner(box, static_cast<Box::Side>(side));
                 linkedVertices.emplace_back(LinkedVertex{nullptr, corners[side], nullptr});
                 cellVertices[prevSide].push_back(&linkedVertices.back());
                 cellVertices[side].push_front(&linkedVertices.back());
@@ -283,7 +283,7 @@ bool FortuneAlgorithm::bound(Box box)
             std::size_t nextSide = (side + 1) % 4;
             if (cellVertices[side].back()->nextHalfEdge == nullptr && corners[nextSide] == nullptr)
             {
-                corners[nextSide] = createCorner(box, static_cast<Box::Side>(nextSide));
+                corners[nextSide] = mDiagram.createCorner(box, static_cast<Box::Side>(nextSide));
                 linkedVertices.emplace_back(LinkedVertex{nullptr, corners[nextSide], nullptr});
                 cellVertices[side].push_back(&linkedVertices.back());
                 cellVertices[nextSide].push_front(&linkedVertices.back());
@@ -318,22 +318,5 @@ bool FortuneAlgorithm::bound(Box box)
         }
     }
     return !error;
-}
-
-VoronoiDiagram::Vertex* FortuneAlgorithm::createCorner(Box box, Box::Side side)
-{
-    switch (side)
-    {
-        case Box::Side::LEFT:
-            return mDiagram.createVertex(Vector2(box.left, box.top));
-        case Box::Side::BOTTOM:
-            return mDiagram.createVertex(Vector2(box.left, box.bottom));
-        case Box::Side::RIGHT:
-            return mDiagram.createVertex(Vector2(box.right, box.bottom));
-        case Box::Side::TOP:
-            return mDiagram.createVertex(Vector2(box.right, box.top));
-        default:
-            return nullptr;
-    }
 }
 

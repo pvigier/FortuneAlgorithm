@@ -59,7 +59,5 @@ private:
         VoronoiDiagram::Vertex* vertex;
         VoronoiDiagram::HalfEdge* nextHalfEdge;
     };
-
-    VoronoiDiagram::Vertex* createCorner(Box box, Box::Side side);
 };
 

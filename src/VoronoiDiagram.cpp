@@ -43,6 +43,23 @@ VoronoiDiagram::Vertex* VoronoiDiagram::createVertex(Vector2 point)
     return mVertices.back().get();
 }
 
+VoronoiDiagram::Vertex* VoronoiDiagram::createCorner(Box box, Box::Side side)
+{
+    switch (side)
+    {
+        case Box::Side::LEFT:
+            return createVertex(Vector2(box.left, box.top));
+        case Box::Side::BOTTOM:
+            return createVertex(Vector2(box.left, box.bottom));
+        case Box::Side::RIGHT:
+            return createVertex(Vector2(box.right, box.bottom));
+        case Box::Side::TOP:
+            return createVertex(Vector2(box.right, box.top));
+        default:
+            return nullptr;
+    }
+}
+
 VoronoiDiagram::HalfEdge* VoronoiDiagram::createHalfEdge(Face* face)
 {
     mHalfEdges.push_back(std::make_unique<HalfEdge>(HalfEdge{mHalfEdges.size(), nullptr, nullptr, nullptr, face, nullptr, nullptr}));

@@ -71,6 +71,7 @@ private:
     friend FortuneAlgorithm;
 
     Vertex* createVertex(Vector2 point);
+    Vertex* createCorner(Box box, Box::Side side);
     HalfEdge* createHalfEdge(Face* face);
 
     // Diagram intersection
