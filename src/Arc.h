@@ -13,7 +13,7 @@ struct Arc
     Arc* left;
     Arc* right;
     // Diagram
-    const VoronoiDiagram::Site* site;
+    VoronoiDiagram::Site* site;
     VoronoiDiagram::HalfEdge* leftHalfEdge;
     VoronoiDiagram::HalfEdge* rightHalfEdge;
     Event* event;

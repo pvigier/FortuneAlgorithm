@@ -13,7 +13,7 @@ Beachline::~Beachline()
     delete mNil;
 }
 
-Arc* Beachline::createArc(const VoronoiDiagram::Site* site)
+Arc* Beachline::createArc(VoronoiDiagram::Site* site)
 {
     return new Arc{mNil, mNil, mNil, site, nullptr, nullptr, nullptr, mNil, mNil, Arc::Color::RED};
 }

@@ -17,7 +17,7 @@ public:
     Beachline(Beachline&&) = delete;
     Beachline& operator=(Beachline&&) = delete;
 
-    Arc* createArc(const VoronoiDiagram::Site* site);
+    Arc* createArc(VoronoiDiagram::Site* site);
     
     bool isEmpty() const;
     bool isNil(const Arc* x) const;
