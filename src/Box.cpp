@@ -70,7 +70,7 @@ int Box::getIntersections(Vector2 origin, Vector2 destination, std::array<Inters
     }
     // Bottom
     t[i] = (bottom - origin.y) / direction.y;
-    if (t[i] >= 0.0 && t[i] <= 1.0)  
+    if (i < 2 && t[i] >= 0.0 && t[i] <= 1.0)  
     {
         intersections[i].side = Side::BOTTOM;
         intersections[i].point = origin + t[i] * direction;
@@ -79,7 +79,7 @@ int Box::getIntersections(Vector2 origin, Vector2 destination, std::array<Inters
     }
     // Top
     t[i] = (top - origin.y) / direction.y;
-    if (t[i] >= 0.0 && t[i] <= 1.0)  
+    if (i < 2 && t[i] >= 0.0 && t[i] <= 1.0)  
     {
         intersections[i].side = Side::TOP;
         intersections[i].point = origin + t[i] * direction;
