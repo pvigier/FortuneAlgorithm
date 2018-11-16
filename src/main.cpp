@@ -58,6 +58,8 @@ void drawDiagram(sf::RenderWindow& window, VoronoiDiagram& diagram, int nbSites)
         Vector2 center = site->point;
         VoronoiDiagram::Face* face = site->face;
         VoronoiDiagram::HalfEdge* halfEdge = face->outerComponent;
+        if (halfEdge == nullptr)
+            continue;
         while (halfEdge->prev != nullptr)
         {
             halfEdge = halfEdge->prev;

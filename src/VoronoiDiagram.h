@@ -55,11 +55,15 @@ public:
     VoronoiDiagram(VoronoiDiagram&&) = default;
     VoronoiDiagram& operator=(VoronoiDiagram&&) = default;
 
+    // Accessors
     Site* getSite(std::size_t i);
     std::size_t getNbSites() const;
     Face* getFace(std::size_t i);
     const std::vector<std::unique_ptr<Vertex>>& getVertices() const;
     const std::vector<std::unique_ptr<HalfEdge>>& getHalfEdges() const;
+
+    // Intersection with a box
+    void intersect(Box box);
 
 private:
     std::vector<Site> mSites;
@@ -74,7 +78,8 @@ private:
     Vertex* createCorner(Box box, Box::Side side);
     HalfEdge* createHalfEdge(Face* face);
 
-    // Diagram intersection
+    // Intersection with a box
+    void link(Box box, HalfEdge* start, Box::Side startSide, HalfEdge* end, Box::Side endSide);
     void removeVertex(Vertex* vertex);
     void removeHalfEdge(HalfEdge* edge);
 };
