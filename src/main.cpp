@@ -11,11 +11,12 @@
 constexpr float WINDOW_WIDTH = 600.0f;
 constexpr float WINDOW_HEIGHT = 600.0f;
 constexpr float POINT_RADIUS = 0.005f;
+constexpr float OFFSET = 1.0f;
 
 std::vector<Vector2> generatePoints(int nbPoints)
 {
     uint64_t seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::cout << seed << std::endl;
+    std::cout << "seed: " << seed << '\n';
     std::default_random_engine generator(seed);
     std::uniform_real_distribution<double> distribution (0.0, 1.0);
 
@@ -71,8 +72,8 @@ void drawDiagram(sf::RenderWindow& window, VoronoiDiagram& diagram, int nbSites)
         {
             if (halfEdge->origin != nullptr && halfEdge->destination != nullptr)
             {
-                Vector2 origin = (halfEdge->origin->point - center) * 0.9 + center;
-                Vector2 destination = (halfEdge->destination->point - center) * 0.9 + center;
+                Vector2 origin = (halfEdge->origin->point - center) * OFFSET + center;
+                Vector2 destination = (halfEdge->destination->point - center) * OFFSET + center;
                 drawEdge(window, origin, destination, sf::Color::Red);
             }
             halfEdge = halfEdge->next;
@@ -84,33 +85,34 @@ void drawDiagram(sf::RenderWindow& window, VoronoiDiagram& diagram, int nbSites)
 
 int main()
 {
+    // Generate points
     std::vector<Vector2> points = generatePoints(100);
-    /*std::cout << "Points" << std::endl;
-    for (const auto& point : points)
-        std::cout << point << std::endl;*/
+
+    // Construct diagram
     FortuneAlgorithm algorithm(points);
     auto start = std::chrono::system_clock::now();
     algorithm.construct();
     auto duration = std::chrono::system_clock::now() - start;
-    std::cout << "construction: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << std::endl;
-    Box box = {-10000.0, -10000.0, 10000.0, 10000.0};
+    std::cout << "construction: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << '\n';
+
+    // Bound the diagram
     start = std::chrono::system_clock::now();
-    algorithm.bound(box);
+    algorithm.bound(Box{0.0, 0.0, 1.0, 1.0});
     duration = std::chrono::system_clock::now() - start;
-    std::cout << "bounding: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << std::endl;
+    std::cout << "bounding: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << '\n';
     VoronoiDiagram diagram = algorithm.getDiagram();
 
-    // Print vertices
-    /*std::cout << "Vertices" << std::endl;
-    const std::list<VoronoiDiagram::Vertex>& vertices = diagram.getVertices();
-    for (const VoronoiDiagram::Vertex& vertex : vertices)
-        std::cout << vertex.point << std::endl;*/
+    // Intersect the diagram with a box
+    start = std::chrono::system_clock::now();
+    diagram.intersect(Box{0.0, 0.0, 1.0, 1.0});
+    duration = std::chrono::system_clock::now() - start;
+    std::cout << "intersection: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << '\n';
 
+    // Display the diagram
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Voronoi", sf::Style::Default, settings);
-    //window.setView(sf::View(sf::FloatRect(box.left, box.bottom, box.right - box.left, box.top - box.bottom)));
-    window.setView(sf::View(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f)));
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Fortune's algorithm", sf::Style::Default, settings);
+    window.setView(sf::View(sf::FloatRect(-0.1f, -0.1f, 1.2f, 1.2f)));
 
     while (window.isOpen())
     {
