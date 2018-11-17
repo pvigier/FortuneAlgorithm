@@ -133,7 +133,8 @@ void VoronoiDiagram::intersect(Box box)
 
 VoronoiDiagram::Vertex* VoronoiDiagram::createVertex(Vector2 point)
 {
-    mVertices.emplace_back(Vertex{mVertices.end(), point/*, nullptr*/});
+    mVertices.emplace_back();
+    mVertices.back().point = point;
     mVertices.back().it = std::prev(mVertices.end());
     return &mVertices.back();
 }
@@ -157,7 +158,8 @@ VoronoiDiagram::Vertex* VoronoiDiagram::createCorner(Box box, Box::Side side)
 
 VoronoiDiagram::HalfEdge* VoronoiDiagram::createHalfEdge(Face* face)
 {
-    mHalfEdges.emplace_back(HalfEdge{mHalfEdges.end(), nullptr, nullptr, nullptr, face, nullptr, nullptr});
+    mHalfEdges.emplace_back();
+    mHalfEdges.back().incidentFace = face;
     mHalfEdges.back().it = std::prev(mHalfEdges.end());
     if(face->outerComponent == nullptr)
         face->outerComponent = &mHalfEdges.back();

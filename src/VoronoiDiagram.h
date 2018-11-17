@@ -23,20 +23,25 @@ public:
 
     struct Vertex
     {
-        std::list<Vertex>::iterator it;
         Vector2 point;
-        //HalfEdge* incidentEdge;
+
+    private:
+        friend VoronoiDiagram;
+        std::list<Vertex>::iterator it;
     };
 
     struct HalfEdge
     {
-        std::list<HalfEdge>::iterator it;
-        Vertex* origin;
-        Vertex* destination;
-        HalfEdge* twin;
+        Vertex* origin = nullptr;
+        Vertex* destination = nullptr;
+        HalfEdge* twin = nullptr;
         Face* incidentFace;
-        HalfEdge* prev;
-        HalfEdge* next;
+        HalfEdge* prev = nullptr;
+        HalfEdge* next = nullptr;
+
+    private:
+        friend VoronoiDiagram;
+        std::list<HalfEdge>::iterator it;
     };
 
     struct Face
