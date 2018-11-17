@@ -2,7 +2,7 @@
 
 // STL
 #include <vector>
-#include <memory>
+#include <list>
 // My includes
 #include "Box.h"
 
@@ -23,14 +23,14 @@ public:
 
     struct Vertex
     {
-        std::size_t index;
+        std::list<Vertex>::iterator it;
         Vector2 point;
         //HalfEdge* incidentEdge;
     };
 
     struct HalfEdge
     {
-        std::size_t index;
+        std::list<HalfEdge>::iterator it;
         Vertex* origin;
         Vertex* destination;
         HalfEdge* twin;
@@ -59,8 +59,8 @@ public:
     Site* getSite(std::size_t i);
     std::size_t getNbSites() const;
     Face* getFace(std::size_t i);
-    const std::vector<std::unique_ptr<Vertex>>& getVertices() const;
-    const std::vector<std::unique_ptr<HalfEdge>>& getHalfEdges() const;
+    const std::list<Vertex>& getVertices() const;
+    const std::list<HalfEdge>& getHalfEdges() const;
 
     // Intersection with a box
     void intersect(Box box);
@@ -68,8 +68,8 @@ public:
 private:
     std::vector<Site> mSites;
     std::vector<Face> mFaces;
-    std::vector<std::unique_ptr<Vertex>> mVertices;
-    std::vector<std::unique_ptr<HalfEdge>> mHalfEdges;
+    std::list<Vertex> mVertices;
+    std::list<HalfEdge> mHalfEdges;
 
     // Diagram construction
     friend FortuneAlgorithm;
@@ -81,5 +81,5 @@ private:
     // Intersection with a box
     void link(Box box, HalfEdge* start, Box::Side startSide, HalfEdge* end, Box::Side endSide);
     void removeVertex(Vertex* vertex);
-    void removeHalfEdge(HalfEdge* edge);
+    void removeHalfEdge(HalfEdge* halfEdge);
 };

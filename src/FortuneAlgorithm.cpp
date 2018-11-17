@@ -215,10 +215,10 @@ bool FortuneAlgorithm::bound(Box box)
     // Make sure the bounding box contains all the vertices
     for (const auto& vertex : mDiagram.getVertices())
     {
-        box.left = std::min(vertex->point.x, box.left);
-        box.bottom = std::min(vertex->point.y, box.bottom);
-        box.right = std::max(vertex->point.x, box.right);
-        box.top = std::max(vertex->point.y, box.top);
+        box.left = std::min(vertex.point.x, box.left);
+        box.bottom = std::min(vertex.point.y, box.bottom);
+        box.right = std::max(vertex.point.x, box.right);
+        box.top = std::max(vertex.point.y, box.top);
     }
     // Retrieve all non bounded half edges from the beach line
     std::list<LinkedVertex> linkedVertices;
