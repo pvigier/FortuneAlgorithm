@@ -1,7 +1,5 @@
 #pragma once
 
-// STL
-#include <vector>
 // My includes
 #include "PriorityQueue.h"
 #include "VoronoiDiagram.h"
@@ -49,7 +47,7 @@ private:
     // Events
     void addEvent(Arc* left, Arc* middle, Arc* right);
     void deleteEvent(Arc* arc);
-    Vector2 computeConvergencePoint(Vector2 point1, Vector2 point2, Vector2 point3, double& y) const;
+    Vector2 computeConvergencePoint(const Vector2& point1, const Vector2& point2, const Vector2& point3, double& y) const;
 
     // Bounding
 

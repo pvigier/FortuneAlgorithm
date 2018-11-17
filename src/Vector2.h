@@ -1,7 +1,7 @@
 #pragma once
 
+// STL
 #include <ostream>
-#include <cmath>
 
 // Declarations
 

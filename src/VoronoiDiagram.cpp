@@ -1,4 +1,5 @@
 #include "VoronoiDiagram.h"
+// STL
 #include <unordered_set>
 
 VoronoiDiagram::VoronoiDiagram(const std::vector<Vector2>& points)

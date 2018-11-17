@@ -1,4 +1,5 @@
 #include "FortuneAlgorithm.h"
+// My includes
 #include "Arc.h"
 #include "Event.h"
 
@@ -191,7 +192,7 @@ void FortuneAlgorithm::deleteEvent(Arc* arc)
     }
 }
 
-Vector2 FortuneAlgorithm::computeConvergencePoint(Vector2 point1, Vector2 point2, Vector2 point3, double& y) const
+Vector2 FortuneAlgorithm::computeConvergencePoint(const Vector2& point1, const Vector2& point2, const Vector2& point3, double& y) const
 {
     Vector2 v1 = (point1 - point2).getOrthogonal();
     Vector2 v2 = (point2 - point3).getOrthogonal();

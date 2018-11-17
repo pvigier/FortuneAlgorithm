@@ -1,5 +1,8 @@
 #include "Beachline.h"
+// STL
 #include <limits>
+#include <cmath>
+// My includes
 #include "Arc.h"
 
 Beachline::Beachline() : mNil(new Arc), mRoot(mNil)
@@ -42,7 +45,7 @@ Arc* Beachline::getLeftmostArc() const
     return x;
 }
 
-Arc* Beachline::locateArcAbove(Vector2 point, double l) const
+Arc* Beachline::locateArcAbove(const Vector2& point, double l) const
 {
     Arc* node = mRoot;
     bool found = false;
@@ -354,7 +357,7 @@ void Beachline::rightRotate(Arc* y)
     y->parent = x;
 }
 
-double Beachline::computeBreakpoint(Vector2 point1, Vector2 point2, double l) const
+double Beachline::computeBreakpoint(const Vector2& point1, const Vector2& point2, double l) const
 {
     double x1 = point1.x, y1 = point1.y, x2 = point2.x, y2 = point2.y;
     double d1 = 1.0 / (2.0 * (y1 - l));

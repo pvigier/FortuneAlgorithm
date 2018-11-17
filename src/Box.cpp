@@ -1,12 +1,12 @@
 #include "Box.h"
 
-bool Box::contains(Vector2 point) const
+bool Box::contains(const Vector2& point) const
 {
     return point.x >= left && point.x <= right &&
         point.y >= bottom && point.y <= top;
 }
 
-Box::Intersection Box::getFirstIntersection(Vector2 origin, Vector2 direction) const
+Box::Intersection Box::getFirstIntersection(const Vector2& origin, const Vector2& direction) const
 {
     // origin must be in the box
     Intersection intersection;
@@ -44,7 +44,7 @@ Box::Intersection Box::getFirstIntersection(Vector2 origin, Vector2 direction) c
     return intersection;
 }
 
-int Box::getIntersections(Vector2 origin, Vector2 destination, std::array<Intersection, 2>& intersections) const
+int Box::getIntersections(const Vector2& origin, const Vector2& destination, std::array<Intersection, 2>& intersections) const
 {
     // WARNING: If the intersection is a corner, both intersections are equals
     Vector2 direction = destination - origin;
