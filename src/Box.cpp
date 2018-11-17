@@ -17,7 +17,7 @@ Box::Intersection Box::getFirstIntersection(Vector2 origin, Vector2 direction) c
         intersection.side = Side::RIGHT;
         intersection.point = origin + t * direction;
     }
-    else
+    else if (direction.x < 0.0)
     {
         t = (left - origin.x) / direction.x;
         intersection.side = Side::LEFT;
@@ -32,7 +32,7 @@ Box::Intersection Box::getFirstIntersection(Vector2 origin, Vector2 direction) c
             intersection.point = origin + newT * direction;
         }
     }
-    else
+    else if (direction.y < 0.0)
     {
         double newT = (bottom - origin.y) / direction.y;
         if (newT < t)
