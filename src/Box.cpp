@@ -1,4 +1,6 @@
 #include "Box.h"
+// STL
+#include <limits>
 
 bool Box::contains(const Vector2& point) const
 {
@@ -10,7 +12,7 @@ Box::Intersection Box::getFirstIntersection(const Vector2& origin, const Vector2
 {
     // origin must be in the box
     Intersection intersection;
-    double t;
+    double t = std::numeric_limits<double>::infinity();
     if (direction.x > 0.0)
     {
         t = (right - origin.x) / direction.x;
