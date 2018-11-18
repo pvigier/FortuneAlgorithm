@@ -2,6 +2,8 @@
 
 A C++ implementation of the Fortune's algorithm for Voronoi diagram construction.
 
+I wrote an [article](https://pvigier.github.io/2018/11/18/fortune-algorithm-details.html) about this project on my blog, feel free to read it!
+
 ![Screenshot 1](https://github.com/pvigier/FortuneAlgorithm/raw/master/images/voronoi.png)
 
 ## Build
