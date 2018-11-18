@@ -90,22 +90,22 @@ int main()
 
     // Construct diagram
     FortuneAlgorithm algorithm(points);
-    auto start = std::chrono::system_clock::now();
+    auto start = std::chrono::steady_clock::now();
     algorithm.construct();
-    auto duration = std::chrono::system_clock::now() - start;
+    auto duration = std::chrono::steady_clock::now() - start;
     std::cout << "construction: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << '\n';
 
     // Bound the diagram
-    start = std::chrono::system_clock::now();
+    start = std::chrono::steady_clock::now();
     algorithm.bound(Box{0.0, 0.0, 1.0, 1.0});
-    duration = std::chrono::system_clock::now() - start;
+    duration = std::chrono::steady_clock::now() - start;
     std::cout << "bounding: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << '\n';
     VoronoiDiagram diagram = algorithm.getDiagram();
 
     // Intersect the diagram with a box
-    start = std::chrono::system_clock::now();
+    start = std::chrono::steady_clock::now();
     diagram.intersect(Box{0.0, 0.0, 1.0, 1.0});
-    duration = std::chrono::system_clock::now() - start;
+    duration = std::chrono::steady_clock::now() - start;
     std::cout << "intersection: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << '\n';
 
     // Display the diagram
