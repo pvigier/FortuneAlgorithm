@@ -69,6 +69,7 @@ Arc* Beachline::locateArcAbove(const Vector2& point, double l) const
 
 void Beachline::insertBefore(Arc* x, Arc* y)
 {
+    // Find the right place
     if (isNil(x->left))
     {
         x->left = y;
@@ -79,6 +80,7 @@ void Beachline::insertBefore(Arc* x, Arc* y)
         x->prev->right = y;
         y->parent = x->prev;
     }
+    // Set the pointers
     y->prev = x->prev;
     if (!isNil(y->prev))
         y->prev->next = y;
@@ -90,6 +92,7 @@ void Beachline::insertBefore(Arc* x, Arc* y)
 
 void Beachline::insertAfter(Arc* x, Arc* y)
 {
+    // Find the right place
     if (isNil(x->right))
     {
         x->right = y;
@@ -100,6 +103,7 @@ void Beachline::insertAfter(Arc* x, Arc* y)
         x->next->left = y;
         y->parent = x->next;
     }
+    // Set the pointers
     y->next = x->next;
     if (!isNil(y->next))
         y->next->prev = y;
@@ -206,6 +210,7 @@ void Beachline::insertFixup(Arc* z)
         if (z->parent == z->parent->parent->left)
         {
             Arc* y = z->parent->parent->right;
+            // Case 1
             if (y->color == Arc::Color::RED)
             {
                 z->parent->color = Arc::Color::BLACK;
@@ -215,11 +220,13 @@ void Beachline::insertFixup(Arc* z)
             }
             else
             {
+                // Case 2
                 if (z == z->parent->right)
                 {
                     z = z->parent;
                     leftRotate(z);
                 }
+                // Case 3
                 z->parent->color = Arc::Color::BLACK;
                 z->parent->parent->color = Arc::Color::RED;
                 rightRotate(z->parent->parent);
@@ -228,6 +235,7 @@ void Beachline::insertFixup(Arc* z)
         else
         {
             Arc* y = z->parent->parent->left;
+            // Case 1
             if (y->color == Arc::Color::RED)
             {
                 z->parent->color = Arc::Color::BLACK;
@@ -237,11 +245,13 @@ void Beachline::insertFixup(Arc* z)
             }
             else
             {
+                // Case 2
                 if (z == z->parent->left)
                 {
                     z = z->parent;
                     rightRotate(z);
                 }
+                // Case 3
                 z->parent->color = Arc::Color::BLACK;
                 z->parent->parent->color = Arc::Color::RED;
                 leftRotate(z->parent->parent);
@@ -260,6 +270,7 @@ void Beachline::removeFixup(Arc* x)
         if (x == x->parent->left)
         {
             w = x->parent->right;
+            // Case 1
             if (w->color == Arc::Color::RED)
             {
                 w->color = Arc::Color::BLACK;
@@ -267,6 +278,7 @@ void Beachline::removeFixup(Arc* x)
                 leftRotate(x->parent);
                 w = x->parent->right;
             }
+            // Case 2
             if (w->left->color == Arc::Color::BLACK && w->right->color == Arc::Color::BLACK)
             {
                 w->color = Arc::Color::RED;
@@ -274,6 +286,7 @@ void Beachline::removeFixup(Arc* x)
             }
             else
             {
+                // Case 3
                 if (w->right->color == Arc::Color::BLACK)
                 {
                     w->left->color = Arc::Color::BLACK;
@@ -281,6 +294,7 @@ void Beachline::removeFixup(Arc* x)
                     rightRotate(w);
                     w = x->parent->right;
                 }
+                // Case 4
                 w->color = x->parent->color;
                 x->parent->color = Arc::Color::BLACK;
                 w->right->color = Arc::Color::BLACK;
@@ -291,6 +305,7 @@ void Beachline::removeFixup(Arc* x)
         else
         {
             w = x->parent->left;
+            // Case 1
             if (w->color == Arc::Color::RED)
             {
                 w->color = Arc::Color::BLACK;
@@ -298,6 +313,7 @@ void Beachline::removeFixup(Arc* x)
                 rightRotate(x->parent);
                 w = x->parent->left;
             }
+            // Case 2
             if (w->left->color == Arc::Color::BLACK && w->right->color == Arc::Color::BLACK)
             {
                 w->color = Arc::Color::RED;
@@ -305,6 +321,7 @@ void Beachline::removeFixup(Arc* x)
             }
             else
             {
+                // Case 3
                 if (w->left->color == Arc::Color::BLACK)
                 {
                     w->right->color = Arc::Color::BLACK;
@@ -312,6 +329,7 @@ void Beachline::removeFixup(Arc* x)
                     leftRotate(w);
                     w = x->parent->left;
                 }
+                // Case 4
                 w->color = x->parent->color;
                 x->parent->color = Arc::Color::BLACK;
                 w->left->color = Arc::Color::BLACK;
