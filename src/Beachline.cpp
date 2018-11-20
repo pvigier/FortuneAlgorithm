@@ -75,9 +75,9 @@ Arc* Beachline::locateArcAbove(const Vector2& point, double l) const
         if (!isNil(node->next))
             breakpointRight = computeBreakpoint(node->site->point, node->next->site->point, l);
         if (point.x < breakpointLeft)
-            node = node->prev;
+            node = node->left;
         else if (point.x > breakpointRight)
-            node = node->next;
+            node = node->right;
         else
             found = true;
     }
