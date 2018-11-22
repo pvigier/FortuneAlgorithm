@@ -107,7 +107,6 @@ void VoronoiDiagram::intersect(Box box)
                        incomingSide = intersections[0].side;
                     }
                 }
-                inside = !inside;
                 processedHalfEdges.emplace(halfEdge);
             }
             // The edge crosses twice the frontiers of the box
@@ -136,6 +135,8 @@ void VoronoiDiagram::intersect(Box box)
                 processedHalfEdges.emplace(halfEdge);
             }
             halfEdge = nextHalfEdge;
+            // Update inside
+            inside = box.contains(halfEdge->origin->point);
         } while (halfEdge != site.face->outerComponent);
         // Link the last and the first half edges inside the box
         if (outerComponentDirty && incomingHalfEdge != nullptr)

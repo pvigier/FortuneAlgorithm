@@ -19,6 +19,7 @@
 
 // STL
 #include <array>
+#include <limits>
 // My includes
 #include "Vector2.h"
 
@@ -42,5 +43,8 @@ public:
     bool contains(const Vector2& point) const;
     Intersection getFirstIntersection(const Vector2& origin, const Vector2& direction) const; // Useful for Fortune's algorithm
     int getIntersections(const Vector2& origin, const Vector2& destination, std::array<Intersection, 2>& intersections) const; // Useful for diagram intersection
+
+private:
+    static constexpr double EPSILON = std::numeric_limits<double>::epsilon();
 };
 
