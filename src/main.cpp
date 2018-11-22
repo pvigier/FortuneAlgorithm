@@ -62,15 +62,15 @@ void drawEdge(sf::RenderWindow& window, Vector2 origin, Vector2 destination, sf:
     window.draw(line, 2, sf::Lines);
 }
 
-void drawPoints(sf::RenderWindow& window, std::vector<Vector2> points)
+void drawPoints(sf::RenderWindow& window, VoronoiDiagram& diagram)
 {
-    for (Vector2& point : points)
-        drawPoint(window, point, sf::Color(100, 250, 50));
+    for (std::size_t i = 0; i < diagram.getNbSites(); ++i)
+        drawPoint(window, diagram.getSite(i)->point, sf::Color(100, 250, 50));
 }
 
-void drawDiagram(sf::RenderWindow& window, VoronoiDiagram& diagram, int nbSites)
+void drawDiagram(sf::RenderWindow& window, VoronoiDiagram& diagram)
 {
-    for (int i = 0; i < nbSites; ++i)
+    for (std::size_t i = 0; i < diagram.getNbSites(); ++i)
     {
         const VoronoiDiagram::Site* site = diagram.getSite(i);
         Vector2 center = site->point;
@@ -100,10 +100,10 @@ void drawDiagram(sf::RenderWindow& window, VoronoiDiagram& diagram, int nbSites)
     }
 }
 
-int main()
+VoronoiDiagram generateRandomDiagram(std::size_t nbPoints)
 {
     // Generate points
-    std::vector<Vector2> points = generatePoints(100);
+    std::vector<Vector2> points = generatePoints(nbPoints);
 
     // Construct diagram
     FortuneAlgorithm algorithm(points);
@@ -125,6 +125,14 @@ int main()
     duration = std::chrono::steady_clock::now() - start;
     std::cout << "intersection: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << '\n';
 
+    return diagram;
+}
+
+int main()
+{
+    std::size_t nbPoints = 100;
+    VoronoiDiagram diagram = generateRandomDiagram(nbPoints);
+
     // Display the diagram
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
@@ -138,12 +146,14 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Key::N)
+                diagram = generateRandomDiagram(nbPoints);
         }
 
         window.clear(sf::Color::Black);
 
-        drawDiagram(window, diagram, points.size());
-        drawPoints(window, points);
+        drawDiagram(window, diagram);
+        drawPoints(window, diagram);
 
         window.display();
     }
