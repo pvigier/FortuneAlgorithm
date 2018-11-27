@@ -68,40 +68,52 @@ int Box::getIntersections(const Vector2& origin, const Vector2& destination, std
     std::array<double, 2> t;
     std::size_t i = 0; // index of the current intersection
     // Left
-    t[i] = (left - origin.x) / direction.x;
-    if (t[i] > EPSILON && t[i] < 1.0 - EPSILON)  
-    {
-        intersections[i].side = Side::LEFT;
-        intersections[i].point = origin + t[i] * direction;
-        if (intersections[i].point.y >= bottom  - EPSILON && intersections[i].point.y <= top + EPSILON)
-            ++i;
+    if (origin.x < left - EPSILON || destination.x < left - EPSILON)
+    {   
+        t[i] = (left - origin.x) / direction.x;
+        if (t[i] > EPSILON && t[i] < 1.0 - EPSILON)  
+        {
+            intersections[i].side = Side::LEFT;
+            intersections[i].point = origin + t[i] * direction;
+            if (intersections[i].point.y >= bottom  - EPSILON && intersections[i].point.y <= top + EPSILON)
+                ++i;
+        }
     }
     // Right
-    t[i] = (right - origin.x) / direction.x;
-    if (t[i] > EPSILON && t[i] < 1.0 - EPSILON)  
-    {
-        intersections[i].side = Side::RIGHT;
-        intersections[i].point = origin + t[i] * direction;
-        if (intersections[i].point.y >= bottom - EPSILON && intersections[i].point.y <= top + EPSILON)
-            ++i;
+    if (origin.x > right + EPSILON || destination.x > right + EPSILON)
+    {   
+        t[i] = (right - origin.x) / direction.x;
+        if (t[i] > EPSILON && t[i] < 1.0 - EPSILON)  
+        {
+            intersections[i].side = Side::RIGHT;
+            intersections[i].point = origin + t[i] * direction;
+            if (intersections[i].point.y >= bottom - EPSILON && intersections[i].point.y <= top + EPSILON)
+                ++i;
+        }
     }
     // Bottom
-    t[i] = (bottom - origin.y) / direction.y;
-    if (i < 2 && t[i] > EPSILON && t[i] < 1.0 - EPSILON)  
-    {
-        intersections[i].side = Side::BOTTOM;
-        intersections[i].point = origin + t[i] * direction;
-        if (intersections[i].point.x >= left  - EPSILON && intersections[i].point.x <= right + EPSILON)
-            ++i;
+    if (origin.y < bottom - EPSILON || destination.y < bottom - EPSILON)
+    {   
+        t[i] = (bottom - origin.y) / direction.y;
+        if (i < 2 && t[i] > EPSILON && t[i] < 1.0 - EPSILON)  
+        {
+            intersections[i].side = Side::BOTTOM;
+            intersections[i].point = origin + t[i] * direction;
+            if (intersections[i].point.x >= left  - EPSILON && intersections[i].point.x <= right + EPSILON)
+                ++i;
+        }
     }
     // Top
-    t[i] = (top - origin.y) / direction.y;
-    if (i < 2 && t[i] > EPSILON && t[i] < 1.0 - EPSILON)  
-    {
-        intersections[i].side = Side::TOP;
-        intersections[i].point = origin + t[i] * direction;
-        if (intersections[i].point.x >= left - EPSILON && intersections[i].point.x <= right + EPSILON)
-            ++i;
+    if (origin.y > top + EPSILON || destination.y > top + EPSILON)
+    {   
+        t[i] = (top - origin.y) / direction.y;
+        if (i < 2 && t[i] > EPSILON && t[i] < 1.0 - EPSILON)  
+        {
+            intersections[i].side = Side::TOP;
+            intersections[i].point = origin + t[i] * direction;
+            if (intersections[i].point.x >= left - EPSILON && intersections[i].point.x <= right + EPSILON)
+                ++i;
+        }
     }
     // Sort the intersections from the nearest to the farthest
     if (i == 2 && t[0] > t[1])
