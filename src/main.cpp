@@ -114,7 +114,7 @@ VoronoiDiagram generateRandomDiagram(std::size_t nbPoints)
 
     // Bound the diagram
     start = std::chrono::steady_clock::now();
-    algorithm.bound(Box{0.0, 0.0, 1.0, 1.0});
+    algorithm.bound(Box{-0.05, -0.05, 1.05, 1.05}); // Take the bounding box slightly bigger than the intersection box
     duration = std::chrono::steady_clock::now() - start;
     std::cout << "bounding: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << '\n';
     VoronoiDiagram diagram = algorithm.getDiagram();
