@@ -72,17 +72,47 @@ void VoronoiDiagram::intersect(Box box)
         {
             std::array<Box::Intersection, 2> intersections;
             int nbIntersections = box.getIntersections(halfEdge->origin->point, halfEdge->destination->point, intersections);
+            bool nextInside = box.contains(halfEdge->destination->point);
             HalfEdge* nextHalfEdge = halfEdge->next;
-            // The edge is completely outside the box
-            if (nbIntersections == 0 && !inside)
+            // The two points are outside the box 
+            if (!inside && !nextInside)
             {
-                verticesToRemove.emplace(halfEdge->origin);
-                removeHalfEdge(halfEdge);
+                // The edge is outside the box
+                if (nbIntersections == 0)
+                {
+                    verticesToRemove.emplace(halfEdge->origin);
+                    removeHalfEdge(halfEdge);
+                }
+                // The edge crosses twice the frontiers of the box
+                else if (nbIntersections == 2)
+                {
+                    verticesToRemove.emplace(halfEdge->origin);
+                    if (processedHalfEdges.find(halfEdge->twin) != processedHalfEdges.end())
+                    {
+                        halfEdge->origin = halfEdge->twin->destination;
+                        halfEdge->destination = halfEdge->twin->origin;
+                    }
+                    else
+                    {
+                        halfEdge->origin = createVertex(intersections[0].point);
+                        halfEdge->destination = createVertex(intersections[1].point);
+                    }
+                    if (outgoingHalfEdge != nullptr)
+                        link(box, outgoingHalfEdge, outgoingSide, halfEdge, intersections[0].side);
+                    if (incomingHalfEdge == nullptr)
+                    {
+                       incomingHalfEdge = halfEdge;
+                       incomingSide = intersections[0].side;
+                    }
+                    outgoingHalfEdge = halfEdge;
+                    outgoingSide = intersections[1].side;
+                    processedHalfEdges.emplace(halfEdge);
+                }
             }
-            else if (nbIntersections == 1)
+            // The edge is going outside the box
+            else if (inside && !nextInside)
             {
-                // The edge is going outside the box
-                if (inside)
+                if (nbIntersections == 1)
                 {
                     if (processedHalfEdges.find(halfEdge->twin) != processedHalfEdges.end())
                         halfEdge->destination = halfEdge->twin->origin;
@@ -90,9 +120,13 @@ void VoronoiDiagram::intersect(Box box)
                         halfEdge->destination = createVertex(intersections[0].point);
                     outgoingHalfEdge = halfEdge;
                     outgoingSide = intersections[0].side;
+                    processedHalfEdges.emplace(halfEdge);
                 }
-                // The edge is coming inside the box
-                else
+            }
+            // The edge is coming inside the box
+            else if (!inside && nextInside)
+            {
+                if (nbIntersections == 1)
                 {
                     verticesToRemove.emplace(halfEdge->origin);
                     if (processedHalfEdges.find(halfEdge->twin) != processedHalfEdges.end())
@@ -106,37 +140,12 @@ void VoronoiDiagram::intersect(Box box)
                        incomingHalfEdge = halfEdge;
                        incomingSide = intersections[0].side;
                     }
+                    processedHalfEdges.emplace(halfEdge);
                 }
-                processedHalfEdges.emplace(halfEdge);
-            }
-            // The edge crosses twice the frontiers of the box
-            else if (nbIntersections == 2)
-            {
-                verticesToRemove.emplace(halfEdge->origin);
-                if (processedHalfEdges.find(halfEdge->twin) != processedHalfEdges.end())
-                {
-                    halfEdge->origin = halfEdge->twin->destination;
-                    halfEdge->destination = halfEdge->twin->origin;
-                }
-                else
-                {
-                    halfEdge->origin = createVertex(intersections[0].point);
-                    halfEdge->destination = createVertex(intersections[1].point);
-                }
-                if (outgoingHalfEdge != nullptr)
-                    link(box, outgoingHalfEdge, outgoingSide, halfEdge, intersections[0].side);
-                if (incomingHalfEdge == nullptr)
-                {
-                   incomingHalfEdge = halfEdge;
-                   incomingSide = intersections[0].side;
-                }
-                outgoingHalfEdge = halfEdge;
-                outgoingSide = intersections[1].side;
-                processedHalfEdges.emplace(halfEdge);
             }
             halfEdge = nextHalfEdge;
             // Update inside
-            inside = box.contains(halfEdge->origin->point);
+            inside = nextInside;
         } while (halfEdge != site.face->outerComponent);
         // Link the last and the first half edges inside the box
         if (outerComponentDirty && incomingHalfEdge != nullptr)
