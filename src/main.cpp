@@ -121,9 +121,11 @@ VoronoiDiagram generateRandomDiagram(std::size_t nbPoints)
 
     // Intersect the diagram with a box
     start = std::chrono::steady_clock::now();
-    diagram.intersect(Box{0.0, 0.0, 1.0, 1.0});
+    bool valid = diagram.intersect(Box{0.0, 0.0, 1.0, 1.0});
     duration = std::chrono::steady_clock::now() - start;
     std::cout << "intersection: " << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << "ms" << '\n';
+    if (!valid)
+        throw std::runtime_error("An error occured in the box intersection algorithm");
 
     return diagram;
 }

@@ -85,7 +85,7 @@ public:
     const std::list<HalfEdge>& getHalfEdges() const;
 
     // Intersection with a box
-    void intersect(Box box);
+    bool intersect(Box box);
 
 private:
     std::vector<Site> mSites;

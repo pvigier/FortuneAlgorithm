@@ -56,8 +56,9 @@ const std::list<VoronoiDiagram::HalfEdge>& VoronoiDiagram::getHalfEdges() const
     return mHalfEdges;
 }
 
-void VoronoiDiagram::intersect(Box box)
+bool VoronoiDiagram::intersect(Box box)
 {
+    bool error = false;
     std::unordered_set<HalfEdge*> processedHalfEdges;
     std::unordered_set<Vertex*> verticesToRemove;
     for (const Site& site : mSites)
@@ -108,6 +109,8 @@ void VoronoiDiagram::intersect(Box box)
                     outgoingSide = intersections[1].side;
                     processedHalfEdges.emplace(halfEdge);
                 }
+                else
+                    error = true;
             }
             // The edge is going outside the box
             else if (inside && !nextInside)
@@ -122,6 +125,8 @@ void VoronoiDiagram::intersect(Box box)
                     outgoingSide = intersections[0].side;
                     processedHalfEdges.emplace(halfEdge);
                 }
+                else
+                    error = true;
             }
             // The edge is coming inside the box
             else if (!inside && nextInside)
@@ -142,6 +147,8 @@ void VoronoiDiagram::intersect(Box box)
                     }
                     processedHalfEdges.emplace(halfEdge);
                 }
+                else
+                    error = true;
             }
             halfEdge = nextHalfEdge;
             // Update inside
@@ -157,6 +164,8 @@ void VoronoiDiagram::intersect(Box box)
     // Remove vertices
     for (auto& vertex : verticesToRemove)
         removeVertex(vertex);
+    // Return the status
+    return !error;
 }
 
 VoronoiDiagram::Vertex* VoronoiDiagram::createVertex(Vector2 point)
