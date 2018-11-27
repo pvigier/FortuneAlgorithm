@@ -272,8 +272,10 @@ bool FortuneAlgorithm::bound(Box box)
     for (auto& kv : vertices)
     {
         auto& cellVertices = kv.second;
-        for (std::size_t side = 0; side < 4; ++side)
+        // We check twice the first side to be sure that all necessary corners are added
+        for (std::size_t i = 0; i < 5; ++i)
         {
+            std::size_t side = i % 4;
             std::size_t nextSide = (side + 1) % 4;
             // Add first corner
             if (cellVertices[2 * side] == nullptr && cellVertices[2 * side + 1] != nullptr)
